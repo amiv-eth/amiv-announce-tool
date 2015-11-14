@@ -1,0 +1,470 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Install file for AMIV Announce module.
+ * This install file installs all necessary content types
+ * and further definitions that this module requires.
+ * Based in part on the node_example module.
+ *
+ */
+
+/**
+ * Implements hook_install().
+ *
+ * - Add the body field.
+ * - Configure the body field.
+ * - Create required fields.
+ * - Create field instances.
+ *
+ * @see node_type_set_defaults()
+ * @see field_info_instance()
+ * @see field_update_instance()
+ * @see field_create_field()
+ * @see field_create_instance()
+ */
+function amivannounce_install() {
+  // use get_t() to get the name of our localization function for translation
+  // during install, when t() is not available.
+  $t = get_t();
+  
+  // We want our hook_form_alter to run after that of the entity_translation module
+  // by setting our weight to one higher than that of entity_translation, this is achieved
+  db_update('system')
+    ->fields(array('weight' => 12))
+    ->condition('name', 'amivannounce')
+    ->execute();
+
+  // Define the node type.
+  $node_announce = array(
+    'type' => 'node_announce',
+    'name' => $t('Announce Node'),
+    'base' => 'node_content',
+    'description' => $t('An entry for the AMIV Announce'),
+    'body_label' => $t('Example Description'),
+  );
+
+  // Complete the node type definition by setting any defaults not explicitly
+  // declared above.
+  // http://api.drupal.org/api/function/node_type_set_defaults/7
+  $content_type = node_type_set_defaults($node_announce);
+  node_add_body_field($content_type);
+
+  // Save the content type
+  node_type_save($content_type);
+  
+  variable_set('comment_node_announce', '1'); // turn comments off
+  variable_set('node_options_node_announce', array("status")); // set announce nodes to not appear on the front page
+  variable_set('language_content_type_node_announce', '4'); // This enables entity translation for the node_announce content type
+  variable_set('node_announce_edition', '0');
+
+  // Load the instance definition for our content type's body
+  // http://api.drupal.org/api/function/field_info_instance/7
+  $body_instance = field_info_instance('node', 'body', 'node_announce');
+
+  // Add our announce_list view mode to the body instance display by
+  // instructing the body to display as a summary
+  $body_instance['display']['announce_list'] = array(
+    'label' => 'hidden',
+    'type' => 'text_summary_or_trimmed',
+  );
+
+  // Save our changes to the body field instance.
+  // http://api.drupal.org/api/function/field_update_instance/7
+  field_update_instance($body_instance);
+
+  // Create all the fields we are adding to our content type.
+  // http://api.drupal.org/api/function/field_create_field/7
+  foreach (_amivannounce_installed_fields() as $field) {
+    field_create_field($field);
+  }
+
+  // Create all the instances for our fields.
+  // http://api.drupal.org/api/function/field_create_instance/7
+  foreach (_amivannounce_installed_instances() as $instance) {
+    $instance['entity_type'] = 'node';
+    $instance['bundle'] = $node_announce['type'];
+    field_create_instance($instance);
+  }
+  
+  // Convert the title into a title_field (thanks to the title module)
+  if (module_exists('title')) {
+    // Check if replacement enabled
+    if (!title_field_replacement_enabled('node', 'node_announce', 'title')) {
+      if (title_field_replacement_toggle('node', 'node_announce', 'title')) {
+        drupal_set_message(st('<i>title</i> replaced with a field instance.'));
+        title_field_replacement_batch_set('node', 'node_announce', 'title');
+      }
+    }
+  }
+  
+}
+
+ /**
+ * Return a structured array defining the fields created by this content type.
+ */
+function _amivannounce_installed_fields() {
+$t = get_t();
+  return array(
+  'node_announce_shorttitle' => array(
+    'field_name'    => 'node_announce_shorttitle',
+    'label'         => $t('Short Title'),
+    'type'          => 'text',
+    'translatable'   => TRUE,
+  ),
+  'node_announce_catchphrase' => array(
+    'field_name'    => 'node_announce_catchphrase',
+    'label'         => $t('Catchphrase for the event'),
+    'type'          => 'text',
+    'translatable'  => TRUE,
+  ),
+  'node_announce_start_date' => array(
+    'field_name'    => 'node_announce_start_date',
+    'label'         => $t('Date of the start of the event'),
+    'type'          => 'date',
+  ),
+  'node_announce_end_date' => array(
+    'field_name'    => 'node_announce_end_date',
+    'label'         => $t('Date of the end of the event'),
+    'type'          => 'date',
+  ),
+  'node_announce_location' => array(
+    'field_name'    => 'node_announce_location',
+    'label'         => $t('Location of the event'),
+    'type'          => 'text',
+    'translatable'   => TRUE,
+  ),
+  'node_announce_location_link' => array(
+    'field_name'    => 'node_announce_location_link',
+    'label'         => $t('A link for the location of this event'),
+    'type'          => 'text',
+  ),
+  'node_announce_signup_link' => array(
+    'field_name'    => 'node_announce_signup_link',
+    'label'         => $t('A link to the event signup'),
+    'type'          => 'text',
+  ),
+  'node_announce_cost' => array(
+    'field_name'    => 'node_announce_cost',
+    'label'         => $t('Cost of the event (if applicable) e.g. 20 CHF'),
+    'type'          => 'text',
+    'translatable'  => TRUE,
+  ),
+  'node_announce_weight' => array(
+    'field_name'    => 'node_announce_weight',
+    'label'         => $t('Weighting of this entry (smaller is better)'),
+    'type'          => 'number_integer',
+  ),
+  'node_announce_publish_by' => array(
+    'field_name'    => 'node_announce_publish_by',
+    'label'         => $t('Date by which this entry should absolutely be published'),
+    'type'          => 'date',
+  ),
+  'node_announce_featured' => array(
+    'field_name'    => 'node_announce_featured',
+    'label'         => $t('Whether this article is featured or not'),
+    'type'          => 'list_boolean',
+    'settings'     => array(
+      'allowed_values' => array(0 => 0, 1 => 1),
+    ),
+  ),
+  'node_announce_image' => array(
+    'field_name'   => 'node_announce_image',
+    'label'        => $t('Image'),
+    'type'         => 'image',
+    'cardinality'  => 1,
+    'settings'     => array(
+      'uri_scheme'   => 'public',
+    ),
+  ),
+  'node_announce_sent' => array(
+    'field_name'  => 'node_announce_sent',
+    'label'       => $t('Sent'),
+    'type'        => 'list_boolean',
+    'cardinality' => 1,
+    'settings'    => array(
+      'allowed_values' => array(0 => 0, 1 => 1),
+    ),
+  ),
+);
+}
+
+/**
+ * Return a structured array defining the instances for this content type.
+ */
+function _amivannounce_installed_instances() {
+  $t = get_t();
+  return array(
+    'node_announce_shorttitle' => array(
+      'field_name'  => 'node_announce_shorttitle',
+      'type'        => 'text',
+      'label'       => $t('Short title'),
+      'description' => $t('The short title should be max. 3-4 words, it is used in the agenda and featured views'),
+      'required'    => TRUE,
+      'widget'      => array(
+        'type'        => 'text_textfield',
+      ),      
+      'display' => array(
+        'announce_list' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+    'node_announce_catchphrase' => array(
+      'field_name'  => 'node_announce_catchphrase',
+      'type'        => 'date',
+      'label'       => $t('Catchphrase'),
+      'description' => $t('The catchphrase should be max. 3-4 words, the article summarised in a fun/entertaining way.'),
+      'required'    => TRUE,      
+      'widget'      => array(
+        'type'        => 'text_textfield',
+      ),
+      'settings'    => array(
+        'default_value' => 'blank',
+      ),
+      'display' => array(
+        'announce_list' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+    'node_announce_start_date' => array(
+      'field_name'  => 'node_announce_start_date',
+      'type'        => 'date',
+      'label'       => $t('Date of the start of the entry'),
+      'widget'      => array(
+        'type'        => 'date_popup',
+      ),
+      'settings'    => array(
+        'default_value' => 'blank',
+      ),
+      'display' => array(
+        'announce_list' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+    'node_announce_end_date' => array(
+      'field_name'  => 'node_announce_end_date',
+      'type'        => 'date',
+      'label'       => $t('Date of the end of the entry'),
+      'description' => $t('Choosing the end date to be exactly the same as the start date will result in the event being registered as a full-day event.'),
+      'widget'      => array(
+        'type'        => 'date_popup',
+      ),
+      'settings'    => array(
+        'default_value' => 'blank',  
+      ),
+      'display' => array(
+        'announce_list' => array(
+          'label' => 'hidden',
+          'type' => 'node_announce_end_dates',
+        ),
+      ),
+    ),
+    'node_announce_location' => array(
+      'field_name'  => 'node_announce_location',
+      'type'        => 'text',
+      'label'       => $t('Location of event'),
+      'widget'      => array(
+        'type'        => 'text_textfield',
+      ),      
+      'display' => array(
+        'announce_list' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+    'node_announce_location_link' => array(
+      'field_name'  => 'node_announce_location_link',
+      'type'        => 'text',
+      'label'       => $t('Location link'),
+      'description' => $t('This should be a full link i.e. http://www.example.com/resource.html'),
+      'widget'      => array(
+        'type'        => 'text_textfield',
+      ),
+      'display' => array(
+        'announce_list' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+    'node_announce_signup_link' => array(
+      'field_name'  => 'node_announce_signup_link',
+      'type'        => 'text',
+      'label'       => $t('Signup link'),
+      'description' => $t('This should be a full link i.e. http://www.example.com/resource.html'),
+      'widget'      => array(
+        'type'        => 'text_textfield',
+      ),
+      'display' => array(
+        'announce_list' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+    'node_announce_cost' => array(
+      'field_name'  => 'node_announce_cost',
+      'type'        => 'text',
+      'label'       => $t('Cost of the event (if applicable)'),
+      'description' => $t('Don\'t forget to add the currency, valid examples for cost are:<br /><ul><li>20 CHF</li><li>15 CHF (AMIV) 20 CHF (Extern)</li></ul>'),
+      'widget'      => array(
+        'type'        => 'text_textfield',
+      ),
+      'display' => array(
+        'announce_list' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+    'node_announce_weight' => array(
+      'field_name'  => 'node_announce_weight',
+      'type'        => 'number_integer',
+      'label'       => $t('Weight of this entry (smaller is better)'),
+      'widget'      => array(
+        'type'        => 'number',
+      ),
+      'settings'    => array(
+        'default_value' => '0',
+      ),
+      'display' => array(
+        'announce_list' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+    'node_announce_publish_by' => array(
+      'field_name'  => 'node_announce_publish_by',
+      'type'        => 'date',
+      'label'       => $t('Date by which this entry absolutely should be published'),
+      'description' => $t('Please choose this date with consideration as it will partially determine the schedule on which the announce is sent.'),
+      'required'    => TRUE,
+      'widget'      => array(
+        'type'        => 'date_popup',
+      ),
+      'settings'    => array(
+        'default_value' => 'blank',
+      ),
+      'display' => array(
+        'announce_list' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+    'node_announce_featured' => array(
+        'field_name'  => 'node_announce_featured',
+        'label'       => $t('Featured'),
+        'description' => $t('Whether this is a featured article or not.'),
+        'type'        => 'list_boolean',
+        'widget'      => array(
+          'type'    => 'options_onoff',
+          'settings'  => array('display_label' => 1),
+        ),
+        'settings'  => array(
+          'allowed_values'  => array(
+            0      => 0,
+            1      => 1,
+          ),
+        ),
+        'display' => array(
+          'announce_list' => array(
+            'label' => 'hidden',
+            'type' => 'hidden',
+          ),
+        ),
+    ),
+    'node_announce_image' => array(
+      'field_name'  => 'node_announce_image',
+      'label'       => $t('Image'),
+      'description' => $t('Images will be resized to maximum <b>150x150</b> px. Please try to pre-format the image before uploading it so that it isn\'t resized weirdly.'),
+      'required'    => TRUE,
+      'widget' => array(
+        'type'    => 'image_image',
+        'weight'  => 2.10,
+      ),
+      'settings'    => array(
+        'file_directory' => 'announce/[announce:current]',
+        'max_resolution' => '150x150',
+      ),
+      'display' => array(
+        'announce_list' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+    'node_announce_sent' => array(
+      'field_name'  => 'node_announce_sent',
+      'label'       => $t('Sent'),
+      'description' => $t('Whether this article has been sent or not.'),
+      'type'        => 'list_boolean',
+      'widget'      => array(
+        'type'    => 'options_onoff',
+        'settings'  => array('display_label' => 1),
+      ),
+      'settings'  => array(
+        'allowed_values'  => array(
+          0      => 0,
+          1      => 1,
+        ),
+      ),
+      'display' => array(
+        'announce_list' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function amivannounce_uninstall() {
+  // Gather all the example content that might have been created while this
+  // module was enabled.
+  $sql = 'SELECT nid FROM {node} n WHERE n.type = :type';
+  $result = db_query($sql, array(':type' => 'node_announce'));
+  $nids = array();
+  foreach ($result as $row) {
+    $nids[] = $row->nid;
+  }
+  
+  // Delete all the nodes at once
+  node_delete_multiple($nids);
+  
+  // Loop over each of the fields defined by this module and delete
+  // all instances of the field, their data, and the field itself.
+  foreach (array_keys(_amivannounce_installed_fields()) as $field) {
+    field_delete_field($field);
+  }
+  
+  // Loop over any remaining field instances attached to the node_announce
+  // content type (such as the body field) and delete them individually.
+  $instances = field_info_instances('node', 'node_announce');
+  foreach ($instances as $instance_name => $instance) {
+    field_delete_instance($instance);
+  }
+  
+  // Remove variables that we set during install
+  variable_del('comment_node_announce', '1'); // turn comments off
+  variable_del('node_options_node_announce', array("status")); // set announce nodes to not appear on the front page
+  variable_del('language_content_type_node_announce', '2');
+
+  // Delete our content type.
+  node_type_delete('node_announce');
+  
+  // Purge all field information.
+  field_purge_batch(1000);
+}
