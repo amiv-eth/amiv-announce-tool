@@ -1,0 +1,1191 @@
+<?php
+// $Id: node_announce.module,v 1.7 2010/10/15 14:52:26 rfay Exp $
+
+/**
+ * @file
+ * This module provides all of the required functionality of the
+ * AMIV Announce. It is based in part on the node_example,
+ * token_example, tabledrag_example, block modules.
+ *
+ */
+
+/**
+ * Implements hook_help().
+ *
+ */
+function amivannounce_help($path, $arg) {
+  $output = "";
+  switch ($path) {
+    case 'admin/help#amivannounce':
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('The AMIV Announce module handles all of the work associated with sending the announce e-mails.') . '</p>';
+      $output .= '<p>' . t('More info coming as soon as available.') . '</p>';
+      return $output;
+    case 'admin/announce':
+      $output .= '<dl>';
+      $output .= '<dt>' . t('Complete items') . '</dt>';
+      $output .= '<dd>' . t('In the table below can be seen which aspects of an article require completion, or if an article requires translation.') . '</dd>';
+      $output .= '<dt>' . t('Arrange items') . '</dt>';
+      $output .= '<dd>' . t('Arrange the items in the list below in the same order that you would like them to appear in the announce. The order can be saved by clicking on the "Save Entry Order" button.') . '</dd>';
+      $output .= '<dt>' . t('Compile') . '</dt>';
+      $output .= '<dd>' . t('When the items are complete and ordered correctly, they can be compiled to produce the text and html output. These can be viewed and approved <a href="@view">here</a>', array('@view' => 'announce/view')) . '</dd>';
+      $output .= '</dl>';
+      return $output;
+    case 'admin/announce/view':
+      $output .= '<p>' . t('View and approve both the text and html versions of the AMIV Announce.') . '</p>';
+      $output .= '<p>' . t('It is important to do the following when checking the text and html versions:') . '</p>';
+      $output .= '<ul><li>' . t('Read the article text of each article thoroughly') . '</li>';
+      $output .= '<li>' . t('Check the formatting of the articles') . '</li>';
+      $output .= '<li>' . t('Check the formatting of the <i>Featured</i> and <i>Agenda</i> items') . '</li>';
+      $output .= '<li>' . t('Check that links work') . '</li>';
+      $output .= '</ul>';
+      $output .= '<p>' . t('Remember that when you send the full version of this e-mail, it will be sent to over 3000 students. Any formatting errors, typos etc. are definitely your fault.') . '</p>';
+      return $output;
+    case 'admin/announce/send':
+      $output .= '<p>' . t('Send the AMIV Announce.') . '</p>';
+      return $output;
+    case 'node/add/node-announce':
+      $output .= '<p>' . t('<h3>Example Announce</h3>') . '</p>';
+      $output .= '<p>' . t('The image below illustrates how each of the fields below correlates to the announce article in HTML:') . '</p>';
+      global $base_url;
+      $output .= '<div style="width:900px; margin:auto;"><img src="' . $base_url . "/" . drupal_get_path('module', 'amivannounce') . "/images/example_announce.png" . '" /></div>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_permission().
+ *
+ * Since the access to our new custom pages will be granted based on
+ * special permissions, we need to define what those permissions are here.
+ * This ensures that they are available to enable on the user role
+ * administration pages.
+ */
+function amivannounce_permission() {
+  return array(
+    'access announce admin page' => array(
+      'title' => t('Access admin page'),
+      'description' => t('Allow users to access the announce administration page'),
+    ),
+  );
+}
+
+
+/**
+ * Implements hook_menu().
+ *
+ * This hook tells the system at which paths we would like our menus,
+ * and what the corresponding callbacks for those paths should be to
+ * display the desired content at that path.
+ * Currently only the path example.com/admin/announce is enabled.
+ */
+function amivannounce_menu() {
+  $items['admin/announce'] = array(
+    'weight' => -45,
+    'page callback' => 'amivannounce_admin_page',
+    'access arguments' => array('access admin page'),
+    'title' => 'Announce',
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items['admin/announce/compile'] = array(
+    'title' => 'Compile',
+    'weight' => -5,
+    'access arguments' => array('access admin page'),
+    'page callback' => 'amivannounce_admin_page',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+  $items['admin/announce/view'] = array(
+    'title' => 'View',
+    'weight' => 0,
+    'access arguments' => array('access admin page'),
+    'page callback' => 'amivannounce_admin_page_view',
+    'type' => MENU_LOCAL_TASK,
+  );
+  $items['admin/announce/send'] = array(
+    'title' => 'Send',
+    'weight' => 5,
+    'access arguments' => array('access admin page'),
+    'page callback' => 'amivannounce_admin_page_send',
+    'type' => MENU_LOCAL_TASK,
+  );
+  $items['dienste/announce'] = array(
+    'title'     => 'Announce',
+    'description'  => 'Announce übersicht',
+    'menu_name'    => 'menu-main-submenu-dienste',
+    'weight'    => 2,
+    'page callback' => 'amivannounce_display_overview',
+    'access arguments' => array('access content'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items['dienste/announce/%'] = array(    
+    'page callback' => 'amivannounce_display_announce',
+    'access arguments' => array('access content'),
+    'page arguments' => array(2),
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
+ * Custom callback that builds the admin page and returns it to the browser.
+ *
+ * @return
+ *   a build array
+ *
+ */
+function amivannounce_admin_page() {
+  //$output ='<h3>'. t('Announce Admin Page') .'</h3>';
+  //$output .= '<p>' . t('') . '</p>';
+  
+  return drupal_get_form('amivannounce_form');
+}
+
+/**
+ * A callback of the drupal_get_form() function, called in amivannounce_admin_page().
+ * Builds the amivannounce_form form
+ *
+ * @return
+ *   A form array set for theming by theme_amivannounce_form()
+ */
+
+function amivannounce_form($form_state) {
+  // Identify that the elements in 'amivannounce' are a collection, to
+  // prevent Form API from flattening the array when submitted.
+  $form['announce_arrange'] = array(
+    '#type'  => 'fieldset',
+    '#title' => t('Arrange items'),
+    '#tree'  => TRUE,
+  );
+  
+  $form['announce_expired'] = array(
+    '#type'  => 'fieldset',
+    '#title' => t('Expired items'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#tree'  => TRUE,
+  );
+  
+  // Fetch all node_announce nodes from the database
+  $result = db_select('node')
+    ->fields('node')
+    ->condition('type', 'node_announce')
+    ->execute()
+    ->fetchAll();
+
+  // Iterate through each database result, store nodes in a temporary array
+  $nodes = array();
+  if (count($result) > 0){
+    foreach ($result as $row) {
+      $nodes[$row->nid] = node_load($row->nid);
+    }
+  }
+  
+  // Sort the results by their weight
+  usort($nodes, '_node_compare');
+    
+  foreach ($nodes as $node) {
+    // Create a form entry for this item.
+    //
+    // Each entry will be an array using the the nid for that item as
+    // the array key, and an array of table row data as the value.
+    $start = NULL;
+    $end   = NULL;
+    if (!empty($node->node_announce_start_date['und'][0]['value'])) {
+      $start = new DateObject($node->node_announce_start_date['und'][0]['value'], new DateTimeZone($node->node_announce_start_date['und'][0]['timezone_db']), 'Y-m-d\TH:i:s');
+      $start->setTimeZone(new DateTimeZone($node->node_announce_start_date['und'][0]['timezone']));
+    }
+    if (!empty($node->node_announce_end_date['und'][0]['value'])) {
+      $end   = new DateObject($node->node_announce_end_date['und'][0]['value'], new DateTimeZone($node->node_announce_end_date['und'][0]['timezone_db']), 'Y-m-d\TH:i:s');
+      $end->setTimeZone(new DateTimeZone($node->node_announce_end_date['und'][0]['timezone']));
+    }
+    if (!empty($node->node_announce_publish_by['und'][0]['value'])) {
+      $pubBy = new DateObject($node->node_announce_publish_by['und'][0]['value'], new DateTimeZone($node->node_announce_publish_by['und'][0]['timezone_db']), 'Y-m-d\TH:i:s');
+      $pubBy->setTimeZone(new DateTimeZone($node->node_announce_publish_by['und'][0]['timezone']));
+    }
+    $lang = $node->language;
+    $noderow = array(
+      // We'll use a form element of type '#markup' to display the title and further interesting things we want to know about the item.
+      'name' => array(
+        '#markup' => t('<a href="@node">@title</a>', array('@node' => url('node/' . $node->nid), '@title' => isset($node->title_field[$lang][0]['safe_value']) ? $node->title_field[$lang][0]['safe_value'] : $node->title)),
+        '#title'  => t('Title'),
+      ),
+      'author' => array(
+        '#markup' => t('@author', array('@author' => user_load($node->uid)->name)),
+        '#title'  => t('Author'),
+      ),
+      'start_date' => array(
+        '#markup' => !empty($start) ? $start->format('d.m.Y H:i') : t('none'),
+        '#title'  => t('Start'),
+      ),
+      'end_date' => array(
+        '#markup' => !empty($end) ? $end->format('d.m.Y H:i') : t('none'),
+        '#title'  => t('End'),
+      ),
+      'location' => array(
+        '#markup' => $node->node_announce_location[$lang][0]['value'] ,
+        '#title'  => t('Location'),
+      ),
+      'cost' => array(
+        '#markup' => $node->node_announce_cost['de'][0]['value'],
+        '#title'  => t('Cost'),
+      ),
+      'language' => array(
+        '#markup' => $node->language,
+        '#title'  => t('Lang'),
+      ),
+      'translated' => array(
+        '#type' => 'checkbox',
+        '#default_value' => count($node->translations->data)-1, // There will either be one or two entries in the data array, if there are two, the item has been translated
+        '#disabled' => 1,
+        '#title'  => t('T8d'),
+        '#title_display' => 'invisible',
+      ),
+      'featured' => array(
+        '#type' => 'checkbox',
+        '#default_value' => $node->node_announce_featured['und'][0]['value'],
+        '#title' => t('Feat'),
+        '#title_display' => 'invisible',
+      ),
+      'sent' => array(
+        '#type' => 'checkbox',
+        '#default_value' => $node->node_announce_sent['und'][0]['value'],
+        '#title' => t('Sent'),
+        '#title_display' => 'invisible',
+      ),
+      // The 'weight' field will be manipulated as we move the items around in
+      // the table using the tabledrag activity.  We use the 'weight' element
+      // defined in Drupal's Form API.
+      'weight' => array(
+        '#type' => 'weight',
+        '#title' => t('Weight'),
+        '#default_value' => !empty($node->node_announce_weight) ? $node->node_announce_weight['und'][0]['value'] : 10,
+        '#delta' => 10,
+        '#title_display' => 'invisible',
+      ),
+      'publish_by' => array(
+        '#markup' => !empty($pubBy) ? $pubBy->format('d.m.Y H:i') : t('none'),
+        '#title'  => t('Publish By'),
+      ),
+      'operations' => array(
+        '#markup' => t('<a href="@bpathnode/@nid/edit">edit</a>', array('@bpath' => base_path(), '@nid' => $node->nid)),
+        '#title'  => t('Operations'),
+       ),
+    );
+    
+    if ($node->status){
+      $form['announce_arrange']['table'][$node->nid] = $noderow;
+    }
+    else {
+      unset($noderow['weight']);
+      $form['announce_expired']['table'][$node->nid] = $noderow;
+    }
+    
+  }
+    
+  // Now we add our submit button, for submitting the form results.
+  //
+  // The 'actions' wrapper used here isn't strictly necessary for tabledrag,
+  // but is included as a Form API recommended practice.
+  $form['announce_arrange']['actions'] = array('#type' => 'actions');
+  $form['announce_arrange']['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+    '#submit' => array('amivannounce_form_submit_arrange'),
+  );
+  
+  $form['announce_compile'] = array(
+    '#type'  => 'fieldset',
+    '#title' => t('Compile'),
+    '#tree'  => TRUE,
+  );
+  
+  $form['announce_compile']['actions'] = array('#type' => 'actions');
+  $form['announce_compile']['actions']['submit'] = array(
+    '#type'   => 'submit',
+    '#value'  => t('Compile'),
+    '#submit' => array('amivannounce_form_submit_compile'),
+  );
+  
+  return $form;
+}
+
+/**
+ * Theme callback for the amivannounce_form form
+ *
+ * The theme callback will format the $form data structure into a table and
+ * add our tabledrag functionality.  (Note that drupal_add_tabledrag should be
+ * called from the theme layer, and not from a form declaration.  This helps
+ * keep template files clean and readable, and prevents tabledrag.js from
+ * being added twice accidently.
+ *
+ * @return
+ *   The rendered tabledrag form
+ */
+function theme_amivannounce_form($variables) {
+  $form = $variables['form'];
+
+  if (empty($form['announce_arrange']['table'])) {
+    foreach (element_children($form['announce_arrange']) as $id){
+      unset($form['announce_arrange'][$id]);
+    }
+    $form['announce_arrange']['message'] = array(
+      '#type' => 'item',
+      '#markup' => 'There are no Announce items ready to be sent.',
+    );
+  }
+  else {
+    // Initialize the variable which will store our table rows
+    $rows = array();
+    
+    // Iterate over each element in our $form['announce_arrange'] array
+    foreach (element_children($form['announce_arrange']['table']) as $id) {
+      if ($id == 'actions') {
+        continue;
+      }
+      
+      // Before we add our 'weight' column to the row, we need to give the
+      // element a custom class so that it can be identified in the
+      // drupal_add_tabledrag call.
+      //
+      // This could also have been done during the form declaration by adding
+      //     '#attributes' => array('class' => 'example-item-weight'),
+      // directy to the 'weight' element in tabledrag_example_simple_form().
+      $form['announce_arrange']['table'][$id]['weight']['#attributes']['class'] = array('announce-item-weight');
+  
+      // We are now ready to add each element of our $form data to the $rows
+      // array, so that they end up as individual table cells when rendered
+      // in the final table.  We run each element through the drupal_render()
+      // function to generate the final html markup for that element.
+      // Additionally, we build the table headers from the elements.
+      
+      $data = array();
+      $header = array();
+      
+      foreach ($form['announce_arrange']['table'][$id] as $key => $value) {
+        if (!(preg_match('/#.*/', $key) || preg_match('/actions/', $key))) {
+          $data[] = drupal_render($form['announce_arrange']['table'][$id][$key]);
+          $header[] = $value['#title'];
+        }
+      }
+      
+      $rows[] = array(
+        'data' => $data,
+        // To support the tabledrag behaviour, we need to assign each row of the
+        // table a class attribute of 'draggable'. This will add the 'draggable'
+        // class to the <tr> element for that row when the final table is
+        // rendered.
+        'class' => array('draggable'),
+      );
+    }
+  
+    // We also need to pass the drupal_add_tabledrag() function an id which will
+    // be used to identify the <table> element containing our tabledrag form.
+    // Because an element's 'id' should be unique on a page, make sure the value
+    // you select is NOT the same as the form ID used in your form declaration.
+    $table_id = 'announce-items-table';
+  
+    // We can render our tabledrag table for output.
+    $form['announce_arrange']['table']['#children'] = theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => $table_id)));
+    
+    // We now call the drupal_add_tabledrag() function in order to add the
+    // tabledrag.js goodness onto our page.
+    //
+    // For a basic sortable table, we need to pass it:
+    //   - the $table_id of our <table> element,
+    //   - the $action to be performed on our form items ('order'),
+    //   - a string describing where $action should be applied ('siblings'),
+    //   - and the class of the element containing our 'weight' element.
+    drupal_add_tabledrag($table_id, 'order', 'sibling', 'announce-item-weight');
+  }
+  
+  if (empty($form['announce_expired']['table'])){
+    foreach (element_children($form['announce_expired']) as $id){
+      unset($form['announce_expired'][$id]);
+    }
+    $form['announce_expired']['message'] = array(
+      '#type' => 'item',
+      '#markup' => 'There are no expired Announce items.',
+    );
+  }
+  else{
+    $rows = array();
+    // Iterate over each element in our $form['announce_arrange'] array
+    foreach (element_children($form['announce_expired']['table']) as $id) {
+      if ($id == 'actions') {
+        continue;
+      }
+      
+      $data = array();
+      $header = array();
+      
+      foreach ($form['announce_expired']['table'][$id] as $key => $value) {
+        if (!(preg_match('/#.*/', $key) || preg_match('/actions/', $key))) {
+          $data[] = drupal_render($form['announce_expired']['table'][$id][$key]);
+          $header[] = $value['#title'];
+        }
+      }
+      
+      $rows[] = array(
+        'data' => $data,
+      );
+    }
+  
+    $form['announce_expired']['table']['#children'] = theme('table', array('header' => $header, 'rows' => $rows));
+  }
+
+
+  // And then render any remaining form elements (such as our submit button)
+  $output .= drupal_render_children($form);
+
+  return $output;
+}
+
+/**
+ * Submit and rearrange callback for the amivannounce_form form
+ *
+ * Updates the 'weight' value for each of the node_announce nodes, taking into
+ * account that items new order after the drag and drop actions have been
+ * performed.
+ */
+function amivannounce_form_submit_arrange($form, &$form_state) {
+  // Because the form elements were keyed with the item ids from the database,
+  // we can simply iterate through the submitted values.
+  foreach ($form_state['values']['announce_arrange']['table'] as $nid => $item) {
+    $node = node_load($nid);
+    $node->node_announce_weight['und'][0]['value'] = $item['weight'];
+    $node->node_announce_featured['und'][0]['value'] = $item['featured'];
+    node_save($node);
+  }
+}
+
+/**
+ * Submit and compile callback for the amivannounce_form form
+ *
+ * Compiles the entries available for the current announce into the
+ * html and text versions of the announce and preps the system to send
+ * the email out.
+ */
+function amivannounce_form_submit_compile($form, &$form_state) {
+  //variable_get('amivannounce_edition');
+  $nodes    = array();
+  $nodeinfo = array();
+  
+  // Fetch all node_announce nodes from the database
+  $result = db_select('node')
+    ->fields('node')
+    ->condition('type', 'node_announce')
+    ->condition('status', 1)
+    ->execute()
+    ->fetchAll();
+
+  // Iterate through each database result, store nodes in a temporary array
+  $nodes = array();
+  foreach ($result as $row) {
+    $node = node_load($row->nid);
+    $nodes[] = $node;
+  }
+  
+  usort($nodes, '_node_compare');
+  
+  $text = _amivannounce_produce_text($nodes);
+
+  $html = _amivannounce_produce_html($nodes);
+  
+  // Various paths that will be used
+  $basepath = DRUPAL_ROOT . '/' . drupal_get_path('module', 'amivannounce') . '/';
+  $textpath = $basepath . 'text/';
+  $textfile = $textpath . 'announce_text_' . variable_get('amivannounce_edition') . '.txt';
+  $htmlpath = $basepath . 'html/';
+  $htmlfile = $htmlpath . 'announce_html_' . variable_get('amivannounce_edition') . '.html';
+    
+  // Check if we have this path, if not, make it
+  if (!is_dir($textpath)) {
+    if (!mkdir($textpath)) {
+      drupal_set_message('Failed creating directory $textpath');
+    }
+  }
+  if (!is_dir($htmlpath)) {
+    if (!mkdir($htmlpath)) {
+      drupal_set_message('Failed creating directory $htmlpath');
+    }
+  }
+  // Write the text file
+  if ((file_put_contents($textfile , strip_tags($text)) === FALSE)) {
+    drupal_set_message('Compile failed: Text file could not be written');  
+  }
+  else {
+    if ((file_put_contents($htmlfile , $html) === FALSE)) {
+      // TODO: delete text file
+      drupal_set_message('Compile failed: HTML file could not be written');  
+    }
+    else {
+      drupal_set_message('Successfully compiled current announce');  
+    }
+  }
+}
+
+/**
+ * Custom callback that builds the admin page view tab and returns it to the browser.
+ *
+ * @return
+ *   a build array
+ *
+ */
+function amivannounce_admin_page_view() {
+  global $base_url;
+  $basepath = DRUPAL_ROOT . '/' . drupal_get_path('module', 'amivannounce') . '/';
+  $textpath = $basepath . 'text/';
+  $textfile = $textpath . 'announce_text_' . variable_get('amivannounce_edition') . '.txt';
+  $htmlpath = $basepath . 'html/';
+  $htmlfile = $htmlpath . 'announce_html_' . variable_get('amivannounce_edition') . '.html';
+  
+  
+  if (file_exists($textfile) && file_exists($htmlfile)) {
+    $output = "";
+    $output .= '<div style="margin:auto; width:650px;"><pre>' . file_get_contents($textfile) . '</pre></div>';
+    $output .= '<div style="margin:auto; width:650px;"><iframe id="announceFrame" style="width:650px;" src="' . $base_url . "/" . drupal_get_path('module', 'amivannounce') . "/html/announce_html_" . variable_get('amivannounce_edition') . '.html?' . time() . '"></iframe></div>' . "\n";
+    return $output;
+  }
+  else {
+    return t('Please <a href="@compile">compile</a> the Announce first.', array('@compile' => 'compile'));
+  }
+}
+
+/**
+ * Custom callback that builds the admin page send tab and returns it to the browser.
+ *
+ * @return
+ *   a build array
+ *
+ */
+function amivannounce_admin_page_send() {
+  //$output ='<h3>'. t('Announce Admin Page') .'</h3>';
+  //$output .= '<p>' . t('') . '</p>';
+  
+  //return "Send functionality coming soon.";
+  
+  return drupal_get_form('amivannounce_send_form');
+}
+
+/**
+ * A callback of the drupal_get_form() function, called in amivannounce_admin_page_send().
+ * Builds the amivannounce_send_form form
+ *
+ * @return
+ *   A form array set for theming by theme_amivannounce_send_form()
+ */
+
+function amivannounce_send_form($form_state) {
+  // Has the announce been compiled?
+  if (file_exists(DRUPAL_ROOT . "/" . drupal_get_path('module', 'amivannounce') . "/html/announce_html_" . variable_get('amivannounce_edition') . ".html") && file_exists(DRUPAL_ROOT . "/" . drupal_get_path('module', 'amivannounce') . "/text/announce_text_" . variable_get('amivannounce_edition') . ".txt")) {
+    $ready_to_send = TRUE;
+  }
+  else {
+    drupal_set_message(t('Please compile and check the announce before trying to send it!'));
+    $ready_to_send = FALSE;
+  }
+  
+  $form['announce_set_subject'] = array(
+    '#type'  => 'fieldset',
+    '#title' => t('Set subject'),
+    '#tree'  => TRUE,
+    '#disabled' => !$ready_to_send,
+  );
+  
+  
+  $result = db_select('node')
+    ->fields('node')
+    ->condition('type', 'node_announce')
+    ->condition('status', 1)
+    ->execute()
+    ->fetchAll();
+
+  // Iterate through each database result, store nodes in a temporary array
+  $nodes = array();
+  foreach ($result as $row) {
+    $node = node_load($row->nid);
+    $nodes[] = $node;
+  }
+  
+  usort($nodes, '_node_compare');
+  
+  $titles = array();
+  foreach ($nodes as $node) {
+    if ($node->node_announce_featured['und'][0]['value'] == 1) {
+      $titles[] = !empty($node->node_announce_shorttitle['de'][0]['safe_value']) ? $node->node_announce_shorttitle['de'][0]['safe_value'] : $node->node_announce_shorttitle['en'][0]['safe_value'] ;
+    }
+  }
+  foreach ($nodes as $node) {
+    if ($node->node_announce_featured['und'][0]['value'] != 1) {
+      $titles[] = !empty($node->node_announce_shorttitle['de'][0]['safe_value']) ? $node->node_announce_shorttitle['de'][0]['safe_value'] : $node->node_announce_shorttitle['en'][0]['safe_value'] ;
+    }
+  }
+  
+  $complete_titles = array();
+  for ($i = 0; $i < count($titles)-1; $i++) {
+    $complete_titles[] = "[AMIV] Announce: " . implode(', ', array_slice($titles, 0, count($titles) - $i));
+    if ($i == 1) {
+      $complete_titles[$i] .= " und mehr!";
+    }
+    if ($i > 1) {
+      $complete_titles[$i] .= " und viel mehr!";
+    }
+  }
+  $all_titles = implode("\n", $complete_titles);
+  
+  $form['announce_set_subject']['amivannounce_subject_suggestion'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Announce subject suggestion'),
+    '#description' => t('A number of options for the subject of the announce'),
+    '#rows' => count($complete_titles),
+    '#resizable' => FALSE,
+    '#default_value' => $all_titles,
+  );
+  $form['announce_set_subject']['amivannounce_subject'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Announce subject'),
+    '#maxlength' => 120,
+    '#size' => 120,
+    '#description' => t('The subject of the e-mail that will be sent'),
+    '#default_value' => variable_get('amivannounce_subject'),
+  );
+  
+  $form['announce_send'] = array(
+    '#type'  => 'fieldset',
+    '#title' => t('Send e-mail'),
+    '#tree'  => TRUE,
+    '#disabled' => !$ready_to_send,
+  );
+  
+  $form['announce_send']['send_test'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Send test e-mail'),
+  );
+  
+  $form['announce_send']['amivannounce_testemail'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Test e-mail address'),
+    '#maxlength' => 30,
+    '#description' => t('A test version of the Announce will be sent to this address'),
+    '#default_value' => variable_get('amivannounce_testemail'),
+  );
+  
+  $displayed = variable_get('amivannounce_test_sent', FALSE);
+  
+  $form['announce_send']['send_full'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Send full e-mail'),
+    '#description' => t('Sending the full e-mail will result in the current articles being archived. Please only send the full e-mail when you\'re sure.'),
+    '#disabled' => !$displayed,
+  );
+  
+  // Now we add our submit button, for submitting the form results.
+  //
+  // The 'actions' wrapper used here isn't strictly necessary for tabledrag,
+  // but is included as a Form API recommended practice.
+  $form['announce_send']['actions'] = array('#type' => 'actions');
+  $form['announce_send']['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Send'),
+    '#submit' => array('amivannounce_send_form_send'),
+  );
+  
+  return $form;
+}
+
+
+/**
+ * Send callback for the amivannounce_send_form_send form
+ *
+ * Checks whether the test e-mail has been sent. Sends both test and final mails
+ * to the designated addresses.
+ */
+function amivannounce_send_form_send($form, &$form_state) {
+  // Because the form elements were keyed with the item ids from the database,
+  // we can simply iterate through the submitted values.
+  dpm($form_state);
+  
+  // Check if we're trying to send a test e-mail?
+  if ($form_state['values']['announce_send']['send_test'] == '1') {
+    $send_test = TRUE;
+    // Check if a subject has been set
+    if (isset($form_state['values']['announce_set_subject']['amivannounce_subject'])) {
+      variable_set('amivannounce_subject', $form_state['values']['announce_set_subject']['amivannounce_subject']);
+    }
+    else {
+      drupal_set_message("Please fill the <i>Announce subject</i> field");
+      $send_test = FALSE;
+    }
+    // Check if the test-email field has been filled
+    if (!empty($form_state['values']['announce_send']['amivannounce_testemail'])) {
+      variable_set('amivannounce_testemail', $form_state['values']['announce_send']['amivannounce_testemail']);
+    }
+    else {
+      drupal_set_message("Please fill the <i>Test e-mail address</i> field");
+      $send_test = FALSE;
+    }
+  }
+  else {
+    $send_test = FALSE;
+  }
+  
+  // Are we trying to send a full e-mail?
+  if ($form_state['values']['announce_send']['send_full'] == '1') {
+    if ($form_state['values']['announce_set_subject']['amivannounce_subject'] == variable_get('amivannounce_subject')) {
+      $send_full = TRUE;
+    }
+    else {
+      drupal_set_message(t('The e-mail subject has changed, please send a test e-mail first.'));
+      variable_set('amivannounce_test_sent', 0);
+      $send_full = FALSE;
+    }
+  }
+  else {
+    $send_full = FALSE;
+  }
+  
+  $boundary = uniqid('np');
+
+  $html = file_get_contents(drupal_get_path('module', 'amivannounce') . "/html/announce_html_" . variable_get('amivannounce_edition') . ".html");
+  $text = file_get_contents(drupal_get_path('module', 'amivannounce') . "/text/announce_text_" . variable_get('amivannounce_edition') . ".txt");
+    
+  $headers = "MIME-Version: 1.0\r\n";
+  $headers .= "From: AMIV <info@amiv.ethz.ch>\r\n";
+  $headers .= "Content-Type: multipart/alternative;boundary=" . $boundary . "\r\n";
+  
+  $message .= "\r\n\r\n--" . $boundary . "\r\n";
+  $message .= "Content-type: text/plain;charset=utf-8\r\n\r\n";
+  $message .= $text;
+  
+  $message .= "\r\n\r\n--" . $boundary . "\r\n";
+  $message .= "Content-type: text/html;charset=utf-8\r\n\r\n";
+  $message .= $html;
+  
+  $message .= "\r\n\r\n--" . $boundary . "--";
+    
+  $subject = variable_get('amivannounce_subject');
+  
+  if ($send_test) {
+    if (mail($form_state['values']['announce_send']['amivannounce_testemail'], '=?UTF-8?B?' . base64_encode($subject) . '?=', $message, $headers)) {
+      variable_set('amivannounce_test_sent' , 1 );
+      drupal_set_message(t("Test E-mail sent to @email" , array('@email' => $form_state['values']['announce_send']['amivannounce_testemail'])));
+    }
+    else {
+      drupal_set_message(t('Test E-mail could not be sent, please check the server error logs of @hostname', array('@hostname' => gethostname())));
+      variable_set('amivannounce_test_sent' , 0 );
+    }
+  }
+  
+  // Sends the full email, advances the announce state to be ready for the next announce
+  if ($send_full) {
+    if (mail("amiv-announce@list.ee.ethz.ch", '=?UTF-8?B?' . base64_encode($subject) . '?=', $message, $headers)) {
+      // Set all nodes which have been included in this announce have been sent.
+      $result = db_select('node')
+        ->fields('node')
+        ->condition('type', 'node_announce')
+        ->condition('status', 1)
+        ->execute()
+        ->fetchAll();
+      $nodes = array();
+      foreach ($result as $row){
+        $node = node_load($row->nid);
+        $node->node_announce_sent['und'][0]['value'] = 1;
+        node_save($node);
+      }
+      
+      drupal_set_message(t("Full E-mail sent to mailing list, please follow the instructions you receive"));
+      $details = array(
+        'date' => time(),
+        'edition' => variable_get('amivannounce_edition'),
+        'title' => $subject,
+      );
+      $editions = unserialize(variable_get('amivannounce_editions'));
+      $editions[intval(variable_get('amivannounce_edition'))] = $details;
+      variable_set('amivannounce_editions', serialize($editions));
+      variable_set('amivannounce_edition', intval(variable_get('amivannounce_edition'))+1);
+      variable_set('amivannounce_test_sent', 0);
+      variable_del('amivannounce_subject');
+    }
+    else {
+      drupal_set_message(t('Full E-mail could not be sent, please check the server error logs of @hostname', array('@hostname' => gethostname())));
+    }
+  }
+
+}
+
+/**
+ * Implements hook_form_alter()
+ *
+ * One task that is accomplished here is to modify the add/edit form for the 
+ * node_announce node, to hide fields that don't need to be seen by "normal"
+ * users.
+ */
+
+function amivannounce_form_alter(&$form, $form_state, $form_id) {
+  // This is the form for node_announce
+  if ($form_id == "node_announce_node_form") {
+    global $user;
+    if (!in_array('administrator', $user->roles)) {
+      // Non-administrator users cannot see weight or featured fields.
+      $form['node_announce_weight']['#access'] = FALSE;
+      $form['node_announce_featured']['#access'] = FALSE;
+      $form['actions']['preview']['#access'] = FALSE;
+      $form['node_announce_sent']['#access'] = FALSE;
+      // Remove the "Language neutral" option, set default language to german for non-administrator users
+      unset($form['language']['#options']['und']);
+      $form['language']['#default_value'] = 'de';
+    } 
+  }
+}
+
+/**
+ * A helper function to sort node_announce nodes by their weight.
+ *
+ */
+function _node_compare($a, $b) {
+  $a = empty($a->node_announce_weight) ? 0 : $a->node_announce_weight['und'][0]['value'];
+  $b = empty($b->node_announce_weight) ? 0 : $b->node_announce_weight['und'][0]['value'];
+  $weight = $a - $b;
+    if ($weight) {
+      return $weight;
+    }
+}
+
+/**
+ * A helper function to produce properly-formatted dates for the Announce
+ * This function essentially decides based on a start date and an end date
+ * how the date should be formatted for different views.
+ *
+ * @param $start_date Drupal DateObject
+ *
+ * @param $end_date Drupal DateObject
+ *
+ * @param $format
+ *
+ * @param $lang
+ *
+ * @return
+ *   A string with the date in the desired format
+ *
+ */
+function amivannounce_date_helper($start_date, $end_date, $format = 'long', $lang = 'de') {
+  $days['de'] = array('1' => 'Montag', '2' => 'Dienstag', '3' => 'Mittwoch', '4' => 'Donnerstag', '5' => 'Freitag', '6' => 'Samstag', '7' => 'Sonntag');
+  $days['en'] = array('1' => 'Monday', '2' => 'Tuesday', '3' => 'Wednesday', '4' => 'Thursday', '5' => 'Friday', '6' => 'Saturday', '7' => 'Sunday');
+  $months['de'] = array('1' => 'Januar', '2' => 'Februar', '3' => 'März', '4' => 'April', '5' => 'Mai', '6' => 'Juni', '7' => 'Juli', '8' => 'August', '9' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Dezember');
+  $months['en'] = array('1' => 'January', '2' => 'February', '3' => 'March', '4' => 'April', '5' => 'May', '6' => 'June', '7' => 'July', '8' => 'August', '9' => 'September', '10' => 'October', '11' => 'November', '12' => 'December');
+  
+  $date = "";
+  $startth = ".";
+  $endth = ".";
+  switch ($format) {
+    case 'long':
+      // Define the "th" "st" for the english start date
+      if ($lang == 'en') {
+        $startth = $start_date->format('S');
+      }
+      // Event has only a start defined
+      if (!$end_date) {
+        $time = "";
+        // Check if event is an all-day event, if not put the start time
+        if (!($start_date->format('H') == "00" && $start_date->format("i") == "00")) {
+          $time = $start_date->format('H:i') . " ";
+        }
+        return $days[$lang][$start_date->format('N')] . " " . $start_date->format('j') . "$startth " . $months[$lang][$start_date->format('n')] . " $time";// . $start_date->format('Y');
+      }
+      
+      // If the event has an end date set
+      if ($lang == 'en') {
+        $endth = $end_date->format('S');
+      }
+      
+      // Event takes place over more than one day
+      if ($start_date->difference($end_date, 'hours') >= 24) {
+        // Event spans two separate months and/or years
+        if (($start_date->format('n') != $end_date->format('n')) || ($start_date->format('Y') != $end_date->format('Y'))) {
+          // Event spans separate years
+          if ($start_date->format('Y') != $end_date->format('Y')) {
+            $date = $start_date->format('j') . "$startth " . $months[$lang][$start_date->format('n')] . " " . $start_date->format('Y') . " - " . $end_date->format('j') . "$endth " . $months[$lang][$end_date->format('n')] . " " . $end_date->format('Y');
+          }
+          else {
+            $date = $start_date->format('j') . "$startth " . $months[$lang][$start_date->format('n')] . " - " . $end_date->format('j') . "$endth " . $months[$lang][$end_date->format('n')] . " " . $end_date->format('Y');
+          }
+        }
+        else { // Event spans multiple days in the same month
+          $date = $start_date->format('j') . "$startth - " . $end_date->format('j') . "$endth " . $months[$lang][$start_date->format('n')] . " " . $end_date->format('Y');
+        }
+      }
+      else {// Event has a start and end in the same day
+        // Event's start is the same as it's end -> also all-day
+        if ($start_date->difference($end_date, 'minutes') == 0) {
+          $date = $days[$lang][$start_date->format('N')] . " " . $start_date->format('j') . "$startth " . $months[$lang][$start_date->format('n')] . " ";// . $start_date->format('Y');
+        }
+        else {
+          // This event is an event which spans a number of hours in the same day
+          $date = $days[$lang][$start_date->format('N')] . " " . $start_date->format('j') . "$startth " . $months[$lang][$start_date->format('n')] . " " . $start_date->format('H:i') . " - " . $end_date->format('H:i');
+        }
+      }
+      break;
+    case 'month':
+      return $months[$lang][$start_date->format('n')];
+    case 'dmy':
+      return $start_date->format('j:n:y');
+    default:
+      
+  }
+  return $date;
+}
+
+
+function _amivannounce_produce_text($nodes) {
+  $text = "";
+  ob_start();
+  include('templates/email--text.tpl.php');
+  $text .= ob_get_clean();
+  return $text;
+}
+
+
+function _amivannounce_produce_html($nodes) {  
+  $text = "";
+  ob_start();
+  include('templates/email--html.tpl.php');
+  $text .= ob_get_clean();
+  return $text;
+}
+
+/**
+ * This function prepares the content that should be seen by the user at the page
+ * http://example.com/announce.
+ * At that page will be a listing of all of the announce's that can be viewed.
+ *
+ */
+
+function amivannounce_display_overview() {
+  $output = "";
+  $editions = unserialize(variable_get('amivannounce_editions'));
+  dpm($editions);
+  if (!empty($editions)) {
+    $header = array(
+      array('data' => t('Datum')),
+      array('data' => t('Titel')),
+    );
+    $rows = array();
+    foreach ($editions as $edition) {
+      $rows[] = array(
+        array('data' => date('d.m.Y', $edition['date']) , 'style' => 'padding:8px;'),
+        array('data' => '<a href="announce/' . intval($edition['edition']) . '/">' . $edition['title'] . '</a>', 'style' => 'padding:8px;'),
+      );
+    }
+    $output .= theme_table(array(
+      'header' => $header,
+      'rows' => $rows,
+      'attributes' => array(),
+      'caption' => NULL,
+      'colgroups' => NULL,
+            'sticky' => NULL,
+            'empty' => NULL,
+        ));
+  }
+  else {
+    $output .= '<p>' . t('There have been no Announce editions published. Please check back later!') . '</p>';
+  }
+  return $output;
+}
+
+/**
+ * This function prepares the content that should be seen by the user at the pages
+ * http://example.com/announce/% where % is an announce edition (a number).
+ * The content of this page will be the announce, in exactly the same form
+ * as it appears in the e-mail which is sent to users.
+ *
+ */
+
+function amivannounce_display_announce($version = NULL) {
+  $editions = unserialize(variable_get('amivannounce_editions'));
+  $version = intval($version);
+  if (isset($editions[$version])) {
+    $output = '<h2>' . $editions[$version]['title'] . '</h2>';
+    global $base_url;
+    $output .= '<div style="margin:auto; width:650px;"><iframe id="announceFrame" style="width:650px; border:none;" src="' . $base_url . "/" . drupal_get_path('module', 'amivannounce') . "/html/announce_html_" . intval($version) . '.html?' . time() . '"></iframe></div>' . "\n";
+  }
+  else {
+    global $base_url;
+    $output .= '<p>' . t('This Announce version has not yet been published. To see a list of the published Announce\'s, go to the following page: !link.', array('!link' => t('<a href="' . $base_url . '/dienste/announce">' . $base_url . '/announce</a>'))) . '</p>';  
+  }
+  
+  
+  return $output;
+}
+
+
+/**
+ * Implements hook_theme().
+ *
+ * We need run our forms through custom theme functions in order to build the
+ * table structure which is required by tabledrag.js.  Before we can use our
+ * custom theme functions, we need to implement hook_theme in order to register
+ * them with Drupal.
+ *
+ * We are defining our theme hooks with the same name as the form generation
+ * function so that Drupal automatically calls our theming function when the
+ * form is displayed.
+ */
+function amivannounce_theme() {
+  return array(
+    // Theme function for the 'sortable' example
+    'amivannounce_form' => array(
+      'render element' => 'form',
+    ),
+  );
+}
+
+
+/**
+ * Implements hook_entity_info_alter().
+ *
+ * This provides us with our own view to use for the announce node
+ * which allows for custom rendering of an announce entry. Relevant
+ * to functions like node_view() or node_build_content().
+ *
+ */
+function amivannounce_entity_info_alter(&$entity_info) {
+  
+}
+
+/**
+* Implements hook_preprocess_node().
+*/
+function amivannounce_preprocess_node(&$vars) {
+  
+} 
+
+/**
+ * Implements hook_token_info()
+ *
+ * This and the implementation of hook_tokens() (below) allow for
+ * us to store uploaded images in a path which corresponds to the
+ * edition of the announce to which the image belongs.
+ *
+ */
+function amivannounce_token_info() {
+  $info['types']['announce'] = array(
+    'name' => t('Announce'),
+    'description' => t("Tokens related to the current Announce."),
+    'type' => 'announce',
+  );
+  $info['tokens']['announce']['current'] = array(
+    'name' => t('Current announce'),
+    'description' => t("The current Announce edition"),
+    );
+  return $info;
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function amivannounce_tokens($type, $tokens, array $data = array(), array $options = array()) {
+  $replacements = array();
+  $sanitize = !empty($options['sanitize']);
+  
+  // Default format tokens.
+  if ($type == 'announce') {
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+      case 'current':
+        $current = 0;
+        $replacements[$original] = $sanitize ? check_plain($current) : $current;
+        break;
+      }
+    }
+  }
+  return $replacements;
+}
+
+/**
+ *  This is a trivial helper function which is used in one of the template
+ *  functions to insert "//" between multiple announce item entries
+ *
+ */
+function amivannounce_put_dashes($texts) {
+  foreach ($texts as $key => $value) {
+    if (empty($value)) unset($texts[$key]);
+  }  
+  return implode(" // ", $texts);
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * Cron is called once a day to check if any announce articles are close to deadline 
+ */
+function amivannounce_cron() {
+  $last_run = variable_get('amivannounce_last_cron_run', 0);
+  // Only execute this code at most once a day
+  if (time() >= $last_run + (60*60*24)) {
+    $result = db_select('node')
+      ->fields('node')
+      ->condition('type', 'node_announce')
+      ->execute()
+      ->fetchAll();
+      
+    // Iterate through each database result, store published nodes in a temporary array
+    $nodes = array();
+    foreach ($result as $row) {
+      $node = node_load($row->nid);
+      if ($node->status == 1){
+        $nodes[] = $node;
+      }
+    }
+  
+    $expiring = array();
+    $expired = array();
+    $unpublished = array();
+    // Check each of the nodes to see if they are within 3 days of expiring.
+    // If it is, add the node to the array of expiring nodes.
+    foreach ($nodes as $node) {
+      $publish_by = new DateObject($node->node_announce_publish_by['und'][0]['value'], new DateTimeZone($node->node_announce_publish_by['und'][0]['timezone_db']), 'Y-m-d\TH:i:s');
+      $publish_by->setTimeZone(new DateTimeZone($node->node_announce_publish_by['und'][0]['timezone']));
+      if (($publish_by->getTimestamp() - time()) < (60*60*3)) {
+        // If we are now after the time where this article is supposed to expire
+        if ($publish_by->getTimestamp() - time() < 0){
+          // If this node was already included in an Announce, just unpublish it.
+          //dd($node);
+          if ($node->node_announce_sent['und'][0]['value'] == 1){
+            $node->status = 0;
+            node_save($node);
+            $unpublished[] = $node;
+          }
+          // If this node wasn't included in an Announce, then we need to alert about it.
+          else{
+            $expired[] = $node;
+          }
+        }
+        // This node will expire within 3 days.
+        else{
+          $expiring[] = $node;
+        }
+      }
+    }
+    
+    // Do we need to send an e-mail informing the admin of a change?
+    if (count($expiring) || count($expired) || count($unpublished)) {
+      // Here we use a template to process the text that will be sent as an e-mail.
+      $text = "";
+      ob_start();
+      include('templates/admin--email.tpl.php');
+      $text .= ob_get_clean();
+      dd($text);
+      if (!mail("info@amiv.ethz.ch", "[AMIVAnnounce] Articles expiring", $text)) {
+        $message = "Amivannounce: Articles nearing expiration, expired or unpublished, e-mail failed to be sent.";  
+      }
+      else {
+        $message = "Amivannounce: Articles nearing expiration, expired or unpublished, e-mail sent successfully.";
+      }  
+    }
+    else {
+      $message = "Amivannounce: No articles needing attention.";
+    }
+    watchdog('amivannounce', $message);
+    variable_set('amivannounce_last_cron_run', time());
+  }
+}

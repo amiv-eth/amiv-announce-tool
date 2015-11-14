@@ -1,0 +1,14 @@
+;$Id$
+
+name = AMIV Announce
+description = Compiles and sends the Announce e-mail
+package = AMIV
+core = 7.x
+dependencies[] = image
+dependencies[] = token
+dependencies[] = date_popup
+dependencies[] = title
+dependencies[] = entity
+dependencies[] = entity_translation
+dependencies[] = date_api
+files[] = amivannounce.module

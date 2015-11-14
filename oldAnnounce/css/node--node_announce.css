@@ -1,0 +1,23 @@
+.node-node-announce p{
+	margin: 0;
+	margin-bottom:10px;
+	font-size: 12px;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.node-node-announce h3{
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	text-transform: none;
+	letter-spacing: normal;
+	line-height: normal;
+	text-shadow: #ffffff 0px 1px 0px;
+}
+
+.node-node-announce tr{
+	width:623px;
+}
+
+.node-node-announce table{
+	margin: 0;
+	width:623px;
+}
