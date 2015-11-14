@@ -28,16 +28,20 @@ foreach($input as $id){
     $decoded = json_decode($result, true); // Decode returned data
     
     // Define variables
-    $title = $decoded['title_de'];
-    $catchphrase = $decoded['catchphrase_de'];
-    $location = $decoded['location'];
+    $title_de = $decoded['title_de'];
+    $title_en = $decoded['title_en'];
+    $catchphrase_de = $decoded['catchphrase_de'];
+    $catchphrase_en = $decoded['catchphrase_en'];	
+    $location = $decoded['location'];			
     $description = $decoded['description_de'];
+    $description_en = $decoded['description_en'];		
     $price = $decoded['price'];
     $signuplink = $baseurl . "eventsignup/" . $id;
     $time_start = $decoded['time_start'];
-    
+    $time_end = $decoded['time_end'];
+
     // Specify array to be returned
-    $push = [ "title" => $title , "catchphrase" => $catchphrase , "location" => $location , "description" => $description , "price" => $price , "signuplink" => $signuplink , "time_start" => $time_start];
+    $push = [ "title_de" => $title_de , "title_en" => $title_en , "catchphrase_de" => $catchphrase_de , "catchphrase_en" => $catchphrase_en , "location" => $location , "description_de" => $description_de , "description_en" => $description_en , "price" => $price , "signuplink" => $signuplink , "time_start" => $time_start , "time_end" => $time_end];
     $out[$push_name] = $push;
     $runs = $runs + 1;
 }
