@@ -9,13 +9,17 @@ session = requests.Session()
 session.auth = (token, '')
 
 """Some data without language relevant content"""
-data = {'time_start': '2045-01-12T12:00:00Z',
-        'time_end': '2045-01-12T13:00:00Z',
-        'time_register_start': '2045-01-11T12:00:00Z',
-        'time_register_end': '2045-01-11T13:00:00Z',
-        'location': 'ETH',
-        'title_de': 'Spasstag',
-        'spots': 20,
+data = {'time_start': '2015-01-12T12:00:00Z',
+        'time_end': '2015-01-12T13:00:00Z',
+        'time_register_start': '2015-01-11T12:00:00Z',
+        'time_register_end': '2015-01-11T13:00:00Z',
+        'location': 'Flums, Tannenberg',
+        'title_de': 'Wat',
+        'description_de': 'Wat',
+        'img_thumbnail': "http://i0.wp.com/sapiengames.com/wp-content/uploads/2014/03/watman.jpg?resize=700%2C525",
+        'spots': 10,
+        'catchphrase_de': "Wat?",
+        'price': "Your sanity",
         'is_public': True}
 
 payload = json.dumps(data)
