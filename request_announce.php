@@ -4,6 +4,9 @@
 // The get variables have to be given in the following way: ?id[]=21&id[]=22&id[]=23&id[]=24&id[]=25&id[]=26&id[]=27&id[]=28&id[]=29&feature[]=24&feature[]=25
 // The variables are meant to be given by an admin tool
 
+if(empty($_GET['id']) || empty($_GET['feature'])){
+    echo "You need to call this program with the admin tool\n";
+}else{
 
 $input = $_GET['id']; //Use get on URL
 $feature = $_GET['feature'];
@@ -441,5 +444,6 @@ foreach ($input as $id) {
         }
     }
     static_3();
+}
     ?>
  
