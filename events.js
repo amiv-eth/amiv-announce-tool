@@ -7,15 +7,17 @@
 
 
 $(document).ready(function(){
-    $.getScript("https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css");
     $.getJSON( "https://amiv-apidev.vsos.ethz.ch/events", function( data ) {
+
+	var posturl = "http://localhost/request_announce.php";
+	var out = "";
 	
 	var html = "<ul id='sortableList'>";
 	
-	html += "<style>.selected{}li{width:20%;}</style>";
+	html += "<style>.selected{}.featured{}li{width:20%; background-color:white;}</style>";
 	
 	$.each( data._items, function( key, val ) {
-	    html +="<li id='" + this.id + "'>" + this.title_de + "</li>";
+	    html +="<li id='" + this.id + "'>" + this.title_de + " </li>";
 	});
 	
 	html += "</ul>";
@@ -23,27 +25,47 @@ $(document).ready(function(){
 	$( ".events" ).append(html);
 	
 	$("#sortableList").sortable();
-
+	
 	$("li").click(function(){
 	    if($(this).css("background-color")=="rgb(255, 0, 0)"){
-		$(this).css("background-color", "white");
-		$(this).removeClass(".selected");
-	    } else {
-		$(this).css("background-color","red");
+		$(this).css("background-color", "rgb(0, 255, 0)");
+		$(this).addClass(".featured");
+	    } else if($(this).css("background-color")=="rgb(255, 255, 255)"){
+		$(this).css("background-color","rgb(255, 0, 0)");
 		$(this).addClass(".selected");
+	    } else if($(this).css("background-color")=="rgb(0, 255, 0)"){
+		$(this).css("background-color", "rgb(255, 255, 255)");
+		$(this).removeClass(".selected");
+		$(this).removeClass(".featured");
 	    }
 	});
-
+	
 	/* Get selected IDs */
 	$('button').click(function() {
-	    var arr = [];
-	    var elements = document.getElementsByClassName(".selected");
-	    $.each(elements, function(index, value){
-		arr.push(this.id);
+	    var arr_id = [];
+	    var elements_id = document.getElementsByClassName(".selected");
+	    var arr_feature = [];
+	    var elements_feature = document.getElementsByClassName(".featured");
+	    $.each(elements_id, function(index, value){
+		arr_id.push(this.id);
 	    });
-
-	    console.log(arr);
-	    alert('id: ' + arr);
+	    $.each(elements_feature, function(index, value){
+		arr_feature.push(this.id);
+	    });
+	    console.log(arr_id);
+	    console.log(arr_feature);
+	    out += posturl+"?";
+	    for(id in arr_id){
+		out += "id[]="+arr_id[id]+"&";
+	    }
+	    for(feature in arr_feature){
+		out += "feature[]="+arr_feature[feature];
+		if(feature != arr_feature.length-1){
+		    out += "&";
+		}
+	    }
+	    console.log(out);
+	    window.location = out;
 	});
     });
 })
