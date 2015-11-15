@@ -17,7 +17,9 @@ $(document).ready(function(){
 	html += "<style>.selected{}.featured{}li{width:20%; background-color:white;}</style>";
 	
 	$.each( data._items, function( key, val ) {
-	    html +="<li id='" + this.id + "'>" + this.title_de + " </li>";
+	    if(this.show_announce==true){
+		html +="<li id='" + this.id + "'>" + this.title_de + " </li>";
+	    }
 	});
 	
 	html += "</ul>";

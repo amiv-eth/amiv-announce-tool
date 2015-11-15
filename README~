@@ -1,0 +1,1 @@
+This tool is meant to take the announcement admin's input via events.js which lists all relevant options and redirects it to request_announce.php which finally outputs the announce html

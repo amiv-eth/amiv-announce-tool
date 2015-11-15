@@ -25,6 +25,6 @@ payload = json.dumps(data)
 
 session.headers['Content-Type'] = 'application/json'
 response = session.post('https://amiv-apidev.vsos.ethz.ch/events', verify=False,
-                             data=payload)
+                             data=data)
 print response.json()
 del(session.headers['Content-Type']) # Header not needed anymore
