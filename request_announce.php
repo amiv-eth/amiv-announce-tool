@@ -1,18 +1,73 @@
 <?php
+
 // This script gets event-ids via HTTP-GET from the AMIV announce tool, queries the API and posts an array containing the relevant data to the following program in the toolchain
+// The get variables have to be given in the following way: ?id[]=21&id[]=22&id[]=23&id[]=24&id[]=25&id[]=26&id[]=27&id[]=28&id[]=29&feature[]=24&feature[]=25
+// The variables are meant to be given by an admin tool
 
-$input = $_GET["id"]; //Use get on URL
+
+$input = $_GET['id']; //Use get on URL
+$feature = $_GET['feature'];
 $out = []; // Initialize output
+$feature1 = [];
+$feature2 = [];
 
-$baseurl = "https://amiv-apidev.vsos.ethz.ch/";
-$targeturl = "http://localhost/template.php";
-$runs = 0; // runtimevariable
+$baseurl = "https://amiv-apidev.vsos.ethz.ch";
+$targeturl = "http://localhost/template.php"; // Temporary 
+// Takes date from API
+function name_of_month($date) {
+    $month_num = date_format($date, "n");
+    switch ($month_num) {
+        case 1:
+            return "Januar";
+        case 2:
+            return "Februar";
+        case 3:
+            return "März";
+        case 4:
+            return "April";
+        case 5:
+            return "Mai";
+        case 6:
+            return "Juni";
+        case 7:
+            return "Juli";
+        case 8:
+            return "August";
+        case 9:
+            return "September";
+        case 10:
+            return "Oktober";
+        case 11:
+            return "November";
+        case 12:
+            return "Dezember";
+    }
+}
 
-foreach($input as $id){
-    $push_name = "id".$runs;
-    
-    $url = $baseurl . "events/" . $id;
-    
+function name_of_day($date) {
+    $day_num = date_format($date, "N");
+    switch ($day_num) {
+        case 1:
+            return "Montag";
+        case 2:
+            return "Dienstag";
+        case 3:
+            return "Mittwoch";
+        case 4:
+            return "Donnerstag";
+        case 5:
+            return "Freitag";
+        case 6:
+            return "Samstag";
+        case 7:
+            return "Sonntag";
+    }
+}
+
+foreach ($input as $id) {
+
+    $url = $baseurl . "/events/" . $id;
+
     //Send HTTP-GET via curl
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
@@ -24,49 +79,57 @@ foreach($input as $id){
     curl_setopt($curl, CURLOPT_HTTPGET, TRUE);
     $result = curl_exec($curl);
     curl_close($curl);
-    
+
     $decoded = json_decode($result, true); // Decode returned data
-    
     // Define variables
     $title_de = $decoded['title_de'];
     $title_en = $decoded['title_en'];
     $catchphrase_de = $decoded['catchphrase_de'];
-    $catchphrase_en = $decoded['catchphrase_en'];	
-    $location = $decoded['location'];			
+    $catchphrase_en = $decoded['catchphrase_en'];
+    $location = $decoded['location'];
     $description_de = $decoded['description_de'];
-    $description_en = $decoded['description_en'];		
+    $description_en = $decoded['description_en'];
     $price = $decoded['price'];
-    $signuplink = $baseurl . "eventsignups/" . $id;
+    $signuplink = $baseurl . "/eventsignups/" . $id;
     $time_start = $decoded['time_start'];
     $time_end = $decoded['time_end'];
     $image = $decoded['img_thumbnail'];
 
+    $push_name = "id" . $decoded['id'];
+
     // Specify array to be returned
-    $push = [ "image" => $image , "title_de" => $title_de , "title_en" => $title_en , "catchphrase_de" => $catchphrase_de , "catchphrase_en" => $catchphrase_en , "location" => $location , "description_de" => $description_de , "description_en" => $description_en , "price" => $price , "signuplink" => $signuplink , "time_start" => $time_start , "time_end" => $time_end];
+    $push = ["image" => $image, "title_de" => $title_de, "title_en" => $title_en, "catchphrase_de" => $catchphrase_de, "catchphrase_en" => $catchphrase_en, "location" => $location, "description_de" => $description_de, "description_en" => $description_en, "price" => $price, "signuplink" => $signuplink, "time_start" => $time_start, "time_end" => $time_end];
     $entries[$push_name] = $push;
-    $runs = $runs + 1;
-}
+
+    if ($decoded['id'] == $feature[0]) {
+        $feature1 = $push; 
+    }elseif($decoded['id'] == $feature[1]) {
+            $feature2 = $push;
+        }
+    }
 
 
 
-$date = 11;
-$month = "November";
+    $date = 11;
+    $month = "November";
 
-function entry_full_de(array $obj) {
-    echo "                      <tr>
+// !!! Please be warned: the following is very adhoc and not at all meant to be readable !!!
+
+    function entry_full_de(array $obj) { // List full entries in german
+        echo "                      <tr>
 				  <td valign='top'>
 				    <table cellspacing='0' cellpadding='0' border='0' align='center' width='100%'>
 				      <tbody>
 					<tr><!--- Ext. Reference  !--->
 					  <td height='49' width='100%' valign='middle' bgcolor='#c8cfd8' background='https://www.amiv.ethz.ch/sites/all/modules/amivannounce/images/article-title-bg.png' style='vertical-align:middle; border-left-width: 1px; border-left-color: #BAC2CC; border-left-style: solid; border-right-width: 1px; border-right-color: #BAC2CC; border-right-style: solid; border-bottom-width: 1px; border-bottom-color: #98a3b4; border-bottom-style: solid; border-top-width: 1px; border-top-color: #BAC2CC; border-top-style: solid;'>
 					    <h3 class='textshadow' style='margin:0; margin-left: 17px; padding:0; font-size: 18px; font-weight: normal; color:#324258;'>
-					      ".$obj['title_de']."<small>" . " [".$obj['catchphrase_de'] ."]". "</small><br><!--- Ext. Reference  !--->
+					      " . $obj['title_de'] . "<small>" . " [" . $obj['catchphrase_de'] . "]" . "</small><br><!--- Ext. Reference  !--->
 					      <small>";
-    if (date_format(new DateTime($obj['time_end']), "d.m.y") != date_format(new DateTime ($obj['time_start']),"d.m.y")) {
-        echo date_format(new DateTime($obj['time_start']), "d") . " - " . date_format(new DateTime($obj['time_end']), "d.m.y H:i");
-    } else {
-        echo date_format(new DateTime($obj['time_start']), "d.m.y H:i");
-    } echo " // " . $obj['location'] . " // " . $obj['price'] . " // <a href='" . $obj['signuplink'] . "'>Anmeldung</a></small> </h3>
+        if (date_format(new DateTime($obj['time_end']), "d.m.y") != date_format(new DateTime($obj['time_start']), "d.m.y")) {
+            echo date_format(new DateTime($obj['time_start']), "d") . ". - " . date_format(new DateTime($obj['time_end']), "d.m.y");
+        } else {
+            echo name_of_day(new DateTime($obj['time_start'])) . " " . date_format(new DateTime($obj['time_start']), "d.m.y H:i");
+        } echo " // " . $obj['location'] . " // " . $obj['price'] . " // <a href='" . $obj['signuplink'] . "'>Anmeldung</a></small> </h3>
 					  </td>
 					</tr>
 					<tr>
@@ -75,7 +138,7 @@ function entry_full_de(array $obj) {
 					      <tbody>
 						<tr><!--- Ext. Reference  !--->
 						  <td valign='top' style='padding-right: 20px;' width='150'>
-						    <p><img src='".$obj['image']."' alt='imgtitle' align='left' style='border-width: 3px; border-style: solid; border-color: #ffffff;'>
+						    <p><img src='" . $obj['image'] . "' alt='imgtitle' align='left' style='border-width: 3px; border-style: solid; border-color: #ffffff;'>
 						    </p>
 						  </td>
 						  <td style='font-size: 12px; line-height: 20px; font-weight: normal; color: #56667d; margin: 0;'>
@@ -91,23 +154,23 @@ function entry_full_de(array $obj) {
 				    </table>
 				  </td>
 				</tr>";
-}
+    }
 
-function entry_full_en(array $obj) {
-    echo "                      <tr>
+    function entry_full_en(array $obj) { // List full entries in english
+        echo "                      <tr>
 				  <td valign='top'>
 				    <table cellspacing='0' cellpadding='0' border='0' align='center' width='100%'>
 				      <tbody>
 					<tr><!--- Ext. Reference  !--->
 					  <td height='49' width='100%' valign='middle' bgcolor='#c8cfd8' background='https://www.amiv.ethz.ch/sites/all/modules/amivannounce/images/article-title-bg.png' style='vertical-align:middle; border-left-width: 1px; border-left-color: #BAC2CC; border-left-style: solid; border-right-width: 1px; border-right-color: #BAC2CC; border-right-style: solid; border-bottom-width: 1px; border-bottom-color: #98a3b4; border-bottom-style: solid; border-top-width: 1px; border-top-color: #BAC2CC; border-top-style: solid;'>
 					    <h3 class='textshadow' style='margin:0; margin-left: 17px; padding:0; font-size: 18px; font-weight: normal; color:#324258;'>
-					      ".$obj['title_en']."<small>" . " [".$obj['catchphrase_en'] ."]". "</small><br><!--- Ext. Reference  !--->
+					      " . $obj['title_en'] . "<small>" . " [" . $obj['catchphrase_en'] . "]" . "</small><br><!--- Ext. Reference  !--->
 					      <small>";
-    if (date_format(new DateTime($obj['time_end']), "d.m.y") != date_format(new DateTime ($obj['time_start']),"d.m.y")) {
-        echo date_format(new DateTime($obj['time_start']), "d") . " - " . date_format(new DateTime($obj['time_end']), "d.m.y H:i");
-    } else {
-        echo date_format(new DateTime($obj['time_start']), "d.m.y H:i");
-    } echo " // " . $obj['location'] . " // " . $obj['price'] . " // <a href='" . $obj['signuplink'] . "'>Anmeldung</a></small> </h3>
+        if (date_format(new DateTime($obj['time_end']), "d.m.y") != date_format(new DateTime($obj['time_start']), "d.m.y")) {
+            echo date_format(new DateTime($obj['time_start']), "d") . ". - " . date_format(new DateTime($obj['time_end']), "d.m.y");
+        } else {
+            echo name_of_day(new DateTime($obj['time_start'])) . " " . date_format(new DateTime($obj['time_start']), "d.m.y H:i");
+        } echo " // " . $obj['location'] . " // " . $obj['price'] . " // <a href='" . $obj['signuplink'] . "'>Signup</a></small> </h3>
 					  </td>
 					</tr>
 					<tr>
@@ -116,7 +179,7 @@ function entry_full_en(array $obj) {
 					      <tbody>
 						<tr><!--- Ext. Reference  !--->
 						  <td valign='top' style='padding-right: 20px;' width='150'>
-						    <p><img src='".$obj['image']."' alt='imgtitle' align='left' style='border-width: 3px; border-style: solid; border-color: #ffffff;'>
+						    <p><img src='" . $obj['image'] . "' alt='imgtitle' align='left' style='border-width: 3px; border-style: solid; border-color: #ffffff;'>
 						    </p>
 						  </td>
 						  <td style='font-size: 12px; line-height: 20px; font-weight: normal; color: #56667d; margin: 0;'>
@@ -132,14 +195,13 @@ function entry_full_en(array $obj) {
 				    </table>
 				  </td>
 				</tr>";
-}
+    }
 
-
-function entry_agenda(array $obj) {
-    echo "<tr>
+    function entry_agenda(array $obj) { // Generic template for Agenda entry
+        echo "<tr>
 						  <td width='45%'>
 						    <p style='font-size: 12px;  font-weight: normal; color: #56667d; margin: 0;margin-left:17px;'>" .
-    date_format(new DateTime($obj['time_start']), "d.m.y H:i") . " :: " . $obj['title_de'] . "</p>
+        date_format(new DateTime($obj['time_start']), "d.m.y H:i") . " :: " . $obj['title_de'] . "</p>
 						  </td>
 						  <td><!--- Ext. Reference  !--->
 						    <p style='font-size: 12px; font-weight: normal; color: #56667d; margin: 0;margin-left:17px;'>
@@ -147,10 +209,10 @@ function entry_agenda(array $obj) {
 							Anmeldung</a> </p>
 						  </td>
 						</tr>";
-}
+    }
 
-function announce_top($month, $date) {
-    echo "
+    function announce_top($month, $date) { //Part where only day and month are dynamic
+        echo "
 <!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01//EN' 'http://www.w3.org/TR/html4/strict.dtd'>
 <html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en'>
   <head>
@@ -212,9 +274,9 @@ function announce_top($month, $date) {
 			  </td>
 			  <td width='115' valign='middle' style='vertical-align:middle; text-align: center;'>
 			    <h2 class='date' style='margin:0; padding:0; font-size:13px; font-weight: normal; color: #fff; text-transform: uppercase; font-weight: bold; line-height:1;'>
-			     " . $month . " </h2>
+			     " . name_of_month(new DateTime(date(""))) . " </h2>
 			    <h2 class='date' style='margin:0; padding:0; font-size:23px; font-weight: normal; color: #fff; font-weight: bold;'>
-			      " . $date . " </h2>
+			      " . date("j") . " </h2>
 			  </td>
 			</tr>
 			<tr>
@@ -250,10 +312,11 @@ function announce_top($month, $date) {
 					      <b><i>FEATURING</i></b> &nbsp; </p>
 					  </td>
 					</tr>";
-}
+    }
 
-function featuring(array $obj1, array $obj2) {
-    echo "<tr> <!-- static -->
+// TODO: Implement feature in front end and consequently in backend
+    function featuring(array $obj1, array $obj2) { // Specifies the features --- not yet fully implemented
+        echo "<tr> <!-- static -->
 					  <td valign='top' bgcolor='#edeff2' style='border-width: 1px; border-color: #bac2cc; border-style: solid;'>
 					    <table cellspacing='0' cellpadding='3' border='0' align='center' width='100%'>
 					      <tbody>
@@ -262,14 +325,14 @@ function featuring(array $obj1, array $obj2) {
 						  </td>
 						  <td valign='middle'>
 						    <p style='font-size: 13px;  font-weight: normal; color: #56667d; margin: 0; margin-bottom: 0px;margin-left:13px;'>
-						      <b>" . $obj1['title_de'] . "</b><br>" .$obj1['time_start'] . "<br>" .$obj1['location'] . "<br>
+						      <b>" . $obj1['title_de'] . "</b><br>" . name_of_day(new DateTime($obj1['time_start'])) . " " . date_format(new DateTime($obj1['time_start']), "d.m.y H:i") . "<br>" . $obj1['location'] . "<br>
 						    </p>
 						  </td><!--- Ext. Reference  !--->
 						  <td valign='middle'><img src='" . $obj2['image'] . "' alt='imgtitle' title='imgtitle' align='left' style='border-width: 3px; border-style: solid; border-color: #ffffff;'>
 						  </td>
 						  <td valign='middle'>
 						    <p style='font-size: 13px;  font-weight: normal; color: #56667d; margin: 0; margin-bottom: 0px;margin-left:13px;'>
-						      <b>" . $obj2['title_de'] . "</b><br>" .$obj2['time_start'] . " <br>" .$obj2['location'] . "<br>
+                                                    <b>" . $obj2['title_de'] . "</b><br>" . name_of_day(new DateTime($obj2['time_start'])) . " " . date_format(new DateTime($obj2['time_start']), "d.m.y H:i") . "<br>" . $obj2['location'] . "<br>
 						    </p>
 						  </td>
 						</tr>
@@ -277,11 +340,10 @@ function featuring(array $obj1, array $obj2) {
 					    </table>
 					  </td>
 </tr>";
-}
+    }
 
-function static_1() {
-
-    echo "<tr style='background-color:#ffffff; height:2px;'>
+    function static_0() { // Part without dynamic data
+        echo "<tr style='background-color:#ffffff; height:2px;'>
 					  <td></td>
 					</tr>
 					<tr>
@@ -298,11 +360,22 @@ function static_1() {
 						      <b><i>Information</i></b> </p>
 						  </td>
 						</tr>";
-}
+    }
 
-function static_2(){
-    
-    echo "<tr>
+    function static_1() { // Part without dynamic data
+        echo "
+					      </tbody>
+					    </table>
+					  </td>
+					</tr>
+				      </tbody>
+				    </table>
+				  </td>
+					      </tr>";
+    }
+
+    function static_2() { // Part without dynamic data
+        echo "<tr>
     <td valign='top'>
         <table cellspacing='0' cellpadding='0' border='0' align='center' width='100%'>
             <tbody>
@@ -317,11 +390,10 @@ function static_2(){
         </table>
     </td>
 </tr>";
-    
-}
+    }
 
-function static_3(){
-    echo"<tr>
+    function static_3() { // Part without dynamic data
+        echo"<tr>
     <td height='15' valign='middle' bgcolor='#c8cfd8' background='https://www.amiv.ethz.ch/sites/all/modules/amivannounce/images/article-title-bg.png' style='vertical-align:middle; border-left-width: 1px; border-left-color: #BAC2CC; border-left-style: solid; border-right-width: 1px; border-right-color: #BAC2CC; border-right-style: solid; border-bottom-width: 1px; border-bottom-color: #98a3b4; border-bottom-style: solid; border-top-width: 1px; border-top-color: #BAC2CC; border-top-style: solid;'>
         <p style='font-size: 13px; line-height: 20px; font-weight: normal; color: #56667d; margin: 0; margin-bottom: 0px;margin-left:13px;'>
             AMIV Announce kann <a href='mailto:amiv-announce-request@list.ee.ethz.ch?subject=3Dunsubscribe'>
@@ -350,34 +422,24 @@ function static_3(){
 </body>
 </html>
 ";
-    
-}
-
-announce_top($month, $date);
-//featuring($sushi, $karaoke);
-static_1();
-foreach ($entries as $entry) {
-    entry_agenda($entry);
-}
-echo "
-					      </tbody>
-					    </table>
-					  </td>
-					</tr>
-				      </tbody>
-				    </table>
-				  </td>
-					      </tr>";
-foreach($entries as $entry){
-    entry_full_de($entry);
-}
-static_2();
-foreach($entries as $entry){
-    if($entry['title_en'] != ""){
-        entry_full_en($entry);
-        }       
     }
-static_3();    
 
-?>
+    announce_top($month, $date);
+    featuring($feature1, $feature2);
+    static_0();
+    foreach ($entries as $entry) {
+        entry_agenda($entry);
+    }
+    static_1();
+    foreach ($entries as $entry) {
+        entry_full_de($entry);
+    }
+    static_2();
+    foreach ($entries as $entry) {
+        if ($entry['title_en'] != "") {
+            entry_full_en($entry);
+        }
+    }
+    static_3();
+    ?>
  
