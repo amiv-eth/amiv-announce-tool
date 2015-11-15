@@ -33,7 +33,7 @@ foreach($input as $id){
     $catchphrase_de = $decoded['catchphrase_de'];
     $catchphrase_en = $decoded['catchphrase_en'];	
     $location = $decoded['location'];			
-    $description = $decoded['description_de'];
+    $description_de = $decoded['description_de'];
     $description_en = $decoded['description_en'];		
     $price = $decoded['price'];
     $signuplink = $baseurl . "eventsignup/" . $id;
