@@ -96,7 +96,7 @@ foreach ($input as $id) {
     $signuplink = $baseurl . "/eventsignups/" . $id;
     $time_start = $decoded['time_start'];
     $time_end = $decoded['time_end'];
-    $image = $decoded['img_thumbnail'];
+    $image = $baseurl.$decoded['img_thumbnail']['content_url'];
 
     $push_name = "id" . $decoded['id'];
 
