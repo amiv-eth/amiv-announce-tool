@@ -48,6 +48,10 @@ $(document).ready(function(){
 	    var elements_id = document.getElementsByClassName(".selected");
 	    var arr_feature = [];
 	    var elements_feature = document.getElementsByClassName(".featured");
+	    var err = 0;
+
+	    err=0;
+	    
 	    $.each(elements_id, function(index, value){
 		arr_id.push(this.id);
 	    });
@@ -56,18 +60,25 @@ $(document).ready(function(){
 	    });
 	    console.log(arr_id);
 	    console.log(arr_feature);
-	    out += posturl+"?";
-	    for(id in arr_id){
-		out += "id[]="+arr_id[id]+"&";
-	    }
-	    for(feature in arr_feature){
-		out += "feature[]="+arr_feature[feature];
-		if(feature != arr_feature.length-1){
-		    out += "&";
+	    
+	    if (arr_id.length != 0 && arr_feature.length == 2){
+		out += posturl+"?";
+		for(id in arr_id){
+		    out += "id[]="+arr_id[id]+"&";
 		}
+		for(feature in arr_feature){
+		    out += "feature[]="+arr_feature[feature];
+		    if(feature != arr_feature.length-1){
+			out += "&";
+		    }
+		}
+		console.log(out);
+		window.location = out;
+	    } else if(arr_id.length == 0){
+		alert("You have to select at least two events to be displayed.");
+	    } else if(arr_feature.length != 2){
+		alert("You have to select exactly two events to be featured.");
 	    }
-	    console.log(out);
-	    window.location = out;
 	});
     });
 })
