@@ -9,7 +9,7 @@
 $(document).ready(function(){
     $.getJSON( "https://amiv-apidev.vsos.ethz.ch/events", function( data ) {
 
-	var posturl = "http://localhost/request_announce.php";
+	var posturl = "./request_announce.php";
 	var out = "";
 	
 	var html = "<ul id='sortableList'>";
