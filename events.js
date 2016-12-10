@@ -17,10 +17,16 @@ $(document).ready(function(){
 	
 	var html = "<table class='table' id='mytable'><tbody class='sortableList'>";
 	
-	html += "<tr><th>ID</th><th>Title</th></tr>"; // Add all headers here
+	html += "<tr>";
+	html+= "<th>Title</th>";// Add all headers here
+	html+= "<th>Description</th>";
+	html += "</tr>"; 
 	$.each( data._items, function( key, val ) {
 	    if(this.show_announce==true){ // Only display events which are selected to appear in the Announce
-		html +="<tr class='clicky' id='" + this._id + "'><td  id='" + this._id + "'>" + this._id + "</td><td>"+this.title_en +" </td></tr>"; // List all display worthy data here
+		html +="<tr class='clicky' id='" + this._id + "'>";
+		html+= "<td>"+this.title_en +" </td>"; // List all display worthy data here
+		html += "<td>" + this.description_en + "</td>";
+		html+= "</tr>"; 
 	    }
 	});
 	
@@ -30,7 +36,7 @@ $(document).ready(function(){
 	    $( "#events" ).append(html);
 	});
 	
-	$('#events').on("click",  ".clicky", function(){ //Handle is events since the table is NOT in DOM and has to be accessed indirectly
+	$('#events').on("click",  ".clicky", function(){ //Handle is #events since the table is NOT in DOM and therefore has to be accessed indirectly
 	    if($(this).hasClass("selected")){
 		$(this).removeClass("selected");
 		$(this).addClass("featured");
@@ -77,6 +83,7 @@ $(document).ready(function(){
 		}
 		console.log(out);
 		window.location = out; */
+		
 	    } else if(arr_feature.length != 2){
 		alert("You have to select exactly two events to be featured.");
 	    }
