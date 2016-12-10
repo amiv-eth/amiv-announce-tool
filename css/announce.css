@@ -1,0 +1,30 @@
+body {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size:12px;
+}
+
+/* Standard blue block with content */
+.block {
+	color: #fff;
+	width: 630px;
+	background: #1f2d54;
+	margin: auto;
+	display: flex;
+	justify-content: center; /* align horizontal */
+	align-items: center; /* align vertical */
+	padding: 10px;
+}
+
+/* Logo */
+#logo.block {
+}
+
+div#title {
+	float: left;
+	width: 80%;
+}
+
+div#date {
+	display: inline-block;
+	vertical-align: middle;
+}
