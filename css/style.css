@@ -2,12 +2,19 @@ tr:hover{
     background: lightblue;
 }
 .selected{
-    background: yellow;
+    background: #98FB98;
 }
 .featured{
-    background: red;
+    background: salmon;
 }
 .clicky{
+}
+#tableset{
+    margin-left:15px;
+    width:60%;
+}
+.buttons{
+    margin-left:15px;
 }
 
 
