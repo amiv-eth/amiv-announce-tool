@@ -1,13 +1,21 @@
+<div class="block" id="heading_block">
+  <div class="block" id="heading">Agenda</div>
+  <div class="block" id="heading">Information</div>
 </div>
 
+<div class="block" id="body_block">
+  <div class="block" id = "body">
     <ul>
       {{#_items}}
+        <li>{{time_start}}::{{title_de}}</li>
       {{/_items}}
     </ul>
   </div>
 
+  <div class="block" id = "body">
     <ul>
       {{#_items}}
+        <li>Wo: {{location}}</li>
       {{/_items}}
     </ul>
   </div>
