@@ -1,6 +1,6 @@
 body {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-	font-size:12px;
+	font-size:8px;
 }
 
 
@@ -62,4 +62,38 @@ div#title {
 div#date {
 	display: inline-block;
 	vertical-align: middle;
+}
+/* heading block consists of two headings */
+div#heading_block {
+	background: #e8462b;
+	padding-top: 0;
+	padding-bottom: 0;
+	font-size: 16px;
+}
+
+div#heading {
+
+	background: #e8462b;
+	display:inline-block;
+}
+
+/* body block consists of two body's */
+div#body_block {
+	padding-top: 0px;
+}
+
+div#body {
+	padding-top: 0px;
+	display: inline-block;
+}
+
+ul {
+	padding: 0;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	list-style-type:none;
+}
+
+li {
+	margin-top: 10px;
 }
