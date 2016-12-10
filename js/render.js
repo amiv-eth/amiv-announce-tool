@@ -1,10 +1,9 @@
 $(document).ready(function() {
 
   // Get JSON file with test data
-  $.getJSON('http://192.168.1.100/events', function(data) {
+  $.getJSON(generateURL('?where{\'show_announce\': true}'), function(data) {
 
   }).done(function(data) {
-
     // Render data with templates
     $.get('./templates/header.html', function(template) {
       var rendered = Mustache.render(template, data);
