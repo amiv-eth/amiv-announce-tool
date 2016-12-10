@@ -26,7 +26,7 @@ $(document).ready(function(){
 	    if(this.show_announce==true){ // Only display events which are selected to appear in the Announce
 		html +="<tr class='clicky selected' id='" + this._id + "'>";
 		html+= "<td>"+this.title_en +" </td>"; // List all display worthy data here
-		html += "<td>"+this.description_en+"</td>";
+		html += "<td id='"+this.description_en+"' class='clickdescription'>Click here to read</td>";
 		html += "<td>"+this.catchphrase_en+"</td>";
 		html += "<td>"+this.location+"</td>";
 		html += "<td>"+this.price+"</td>";
@@ -36,6 +36,10 @@ $(document).ready(function(){
 
 	html += "</tbody></table>";
 
+	$("#events").on("click", ".clickdescription", function(){
+	    alert(this.id);
+	});
+	
 	$( function(){
 	    $( "#events" ).append(html);
 	});
