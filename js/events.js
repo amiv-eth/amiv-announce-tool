@@ -76,8 +76,8 @@ $(document).ready(function(){
 		arr_feature.push(this.id);
 	    });
 
-	    doRender(arr_id);
-	    
+	    doRender(arr_id, arr_feature);
+
 	    $("#target").ready(function(){
 		$.featherlight($("#target"));
 	    });
