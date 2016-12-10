@@ -16,5 +16,31 @@ tr:hover{
 .buttons{
     margin-left:15px;
 }
+.show_color{
+    width:40px;
+    height:15px;
+    float:left;
+    border-style:solid;
+    border-width:2px;
+    margin-right: 5px;
+}
+#leftkey{
+    float:left;
+}
+#middlekey{
+    float:middle;
+}
+#rightkey{
+    float:middle;
+}
+.keytext{
+    float:left;
+    margin-right:10px;
+}
+#key{
+    margin-top: -10px;
+    width:80%;
+    height:30px;
+}
 
 
