@@ -75,8 +75,12 @@ $(document).ready(function(){
 	    $.each(elements_feature, function(index, value){
 		arr_feature.push(this.id);
 	    });
-      
-      doRender(arr_id);
+
+	    doRender(arr_id);
+	    
+	    $("#target").ready(function(){
+		$.featherlight($("#target"));
+	    });
 
 	    //console.log(arr_id);
 	    //console.log(arr_feature);
