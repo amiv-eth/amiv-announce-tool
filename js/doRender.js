@@ -14,7 +14,7 @@ function doRender(selectedIDs) {
       var rendered = Mustache.render(template, data);
       $('#target').html(rendered);
     }, 'html');
-
+ 
     $.get('./templates/logo.html', function(template) {
       var rendered = Mustache.render(template, data);
       $('#target').append(rendered);

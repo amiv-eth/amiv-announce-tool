@@ -82,12 +82,10 @@ $(document).ready(function(){
 		$.featherlight($("#target"));
 	    });
 
-	    //console.log(arr_id);
-	    //console.log(arr_feature);
+	    console.log(arr_id);
+	    console.log(arr_feature);
 
 	    if (arr_feature.length == 2){ // The selection is valid iff there are two featured events
-
-		alert("Everything worked!");
 
 		/*		out += posturl+"?";
 				for(id in arr_id){
@@ -102,9 +100,9 @@ $(document).ready(function(){
 				console.log(out);
 				window.location = out; */
 
-	    } else if(arr_feature.length != 2){
+	    } /*else if(arr_feature.length != 2){
 		alert("You have to select exactly two events to be featured.");
-	    }
+	    }*/
 	});
     });
 })
