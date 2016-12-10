@@ -6,7 +6,9 @@
 /* https://amiv-apidev.vsos.ethz.ch/events?where={%22show_announce%22:%20true} */
 
 var URL = "http://192.168.1.100";
-var events = URL + "/events";
+var events = URL + "/events"; 
+
+// Concept: Get all event data from AMIV API, filter by show_announce tag, allow for some sorting and selecting of the displayed data, generate mail and finally post mail to mail server
 
 $(document).ready(function(){
     $.getJSON( events, function( data ) {
@@ -15,10 +17,10 @@ $(document).ready(function(){
 	
 	var html = "<table class='table' id='mytable'><tbody class='sortableList'>";
 	
-	html += "<tr><th>ID</th><th>Title</th></tr>";
+	html += "<tr><th>ID</th><th>Title</th></tr>"; // Add all headers here
 	$.each( data._items, function( key, val ) {
-	    if(this.show_announce==true){
-		html +="<tr><td  id='" + this._id + "'><div>" + this._id + "</td><td>"+this.title_en +" </td></div></tr>";
+	    if(this.show_announce==true){ // Only display events which are selected to appear in the Announce
+		html +="<tr class='clicky' id='" + this._id + "'><td  id='" + this._id + "'>" + this._id + "</td><td>"+this.title_en +" </td></tr>"; // List all display worthy data here
 	    }
 	});
 	
@@ -27,53 +29,43 @@ $(document).ready(function(){
 	$( function(){
 	    $( "#events" ).append(html);
 	});
-	$(  function() {
-	    $(".sortableList").sortable();
+	
+	$('#events').on("click",  ".clicky", function(){ //Handle is events since the table is NOT in DOM and has to be accessed indirectly
+	    if($(this).hasClass("selected")){
+		$(this).removeClass("selected");
+		$(this).addClass("featured");
+	    } else if($(this).hasClass("featured")){
+		$(this).removeClass("featured");
+	    } else {
+		$(this).addClass("selected");
+	    }
 	});
 
-	
-	$("div").click(function(){
-	    
-	    if($(this).hasClass("featured")){
-		$(this).removeClass("featured");
-	    } else{
-		$(this).addClass("featured").siblings().removeClass("featured");
-	    }
-	    
-	    /*if(!($(this).hasClass(".featured"))){
-		$(this).css("background-color", "rgb(0, 255, 0)");
-		$(this).addClass(".featured");
-	    }  else if($(this).css("background-color")=="rgb(0, 255, 0)"){
-		$(this).css("background-color", "rgb(255, 255, 255)");
-		$(this).removeClass(".selected");
-		$(this).removeClass(".featured");
-	    } else {
-		$(this).css("background-color","rgb(255, 0, 0)");
-		$(this).addClass(".selected");
-	    }*/
+	$(  function() {
+	    $(".sortableList").sortable(); // Make table rows sortable
 	});
 	
-	/* Get selected IDs */
 	$('button').click(function() {
 	    var arr_id = [];
-	    var elements_id = document.getElementsByClassName(".selected");
+	    var elements_id = document.getElementsByClassName("selected");
 	    var arr_feature = [];
-	    var elements_feature = document.getElementsByClassName(".featured");
-	    var err = 0;
-
-	    err=0;
+	    var elements_feature = document.getElementsByClassName("featured");
 	    
-	    $.each(elements_id, function(index, value){
+	    $.each(elements_id, function(index,value){
 		arr_id.push(this.id);
 	    });
 	    $.each(elements_feature, function(index, value){
 		arr_feature.push(this.id);
 	    });
+	    
 	    console.log(arr_id);
 	    console.log(arr_feature);
 	    
-	    if (arr_id.length != 0 && arr_feature.length == 2){
-		out += posturl+"?";
+	    if (arr_feature.length == 2){ // The selection is valid iff there are two featured events
+
+		alert("Everything worked!");
+		
+/*		out += posturl+"?";
 		for(id in arr_id){
 		    out += "id[]="+arr_id[id]+"&";
 		}
@@ -84,9 +76,7 @@ $(document).ready(function(){
 		    }
 		}
 		console.log(out);
-		window.location = out;
-	    } else if(arr_id.length == 0){
-		alert("You have to select at least two events to be displayed.");
+		window.location = out; */
 	    } else if(arr_feature.length != 2){
 		alert("You have to select exactly two events to be featured.");
 	    }
