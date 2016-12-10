@@ -1,1 +1,3 @@
-This tool is meant to take the announcement admin's input via events.js which lists all relevant options and redirects it to request_announce.php which finally outputs the announce html.
+Amiv announce tool is a tool made to create and edit the amiv announce email which is sent to all signed-up students every once in a while.
+The file selector.html and ./js/events.js implement the sorting and selecting functionality needed to edit the announce letter based on jQuery, pulling the required data from AMIV API.
+The announce letter then is built using the mustache framework and template files.
