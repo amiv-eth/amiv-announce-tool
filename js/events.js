@@ -40,7 +40,7 @@ $(document).ready(function(){
 	    $( "#events" ).append(html);
 	});
 
-	$('#events').on("click",  ".clicky", function(){ //Handle is #events since the table is NOT in DOM and therefore has to be accessed indirectly
+	$('#events').on("click",  ".clicky", function(e){ //Handle is #events since the table is NOT in DOM and therefore has to be accessed indirectly
 	    if($(this).hasClass("selected")){
 		$(this).removeClass("selected");
 		$(this).addClass("featured");
@@ -76,25 +76,25 @@ $(document).ready(function(){
 		arr_feature.push(this.id);
 	    });
 
-	    console.log(arr_id);
-	    console.log(arr_feature);
+	    //console.log(arr_id);
+	    //console.log(arr_feature);
 
 	    if (arr_feature.length == 2){ // The selection is valid iff there are two featured events
 
 		alert("Everything worked!");
 
-/*		out += posturl+"?";
-		for(id in arr_id){
-		    out += "id[]="+arr_id[id]+"&";
-		}
-		for(feature in arr_feature){
-		    out += "feature[]="+arr_feature[feature];
-		    if(feature != arr_feature.length-1){
-			out += "&";
-		    }
-		}
-		console.log(out);
-		window.location = out; */
+		/*		out += posturl+"?";
+				for(id in arr_id){
+				out += "id[]="+arr_id[id]+"&";
+				}
+				for(feature in arr_feature){
+				out += "feature[]="+arr_feature[feature];
+				if(feature != arr_feature.length-1){
+				out += "&";
+				}
+				}
+				console.log(out);
+				window.location = out; */
 
 	    } else if(arr_feature.length != 2){
 		alert("You have to select exactly two events to be featured.");
