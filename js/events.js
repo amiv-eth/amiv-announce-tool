@@ -68,7 +68,7 @@ $(document).ready(function(){
 	    var elements_id = document.getElementsByClassName("selected");
 	    var arr_feature = [];
 	    var elements_feature = document.getElementsByClassName("featured");
-	    console.log(elements_feature);
+
 	    $.each(elements_id, function(index,value){
 		arr_id.push(this.id);
 	    });
