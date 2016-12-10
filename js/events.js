@@ -21,7 +21,7 @@ $(document).ready(function(){
 	html+= "<th>Location</th>";
 	html+= "<th>Price</th>";
 	html += "</tr></thead><tbody class='sortableList'>";
-	
+
 	$.each( data._items, function( key, val ) {
 	    if(this.show_announce==true){ // Only display events which are selected to appear in the Announce
 		html +="<tr class='clicky selected' id='" + this._id + "'>";
@@ -35,7 +35,7 @@ $(document).ready(function(){
 	});
 
 	html += "</tbody></table>";
-	
+
 	$( function(){
 	    $( "#events" ).append(html);
 	});
@@ -62,7 +62,7 @@ $(document).ready(function(){
 		$(".clicky").addClass("selected");
 	    }
 	});
-	
+
 	$('#select').click(function() {
 	    var arr_id = [];
 	    var elements_id = document.getElementsByClassName("selected");
