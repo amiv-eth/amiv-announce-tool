@@ -19,7 +19,7 @@ body {
 .header{
   color: #fff;
   width: 630px;
-  background: #ff0000;
+  background: #e8462b;
   margin: auto;
   justify-content: center; /* align horizontal */
   align-items: center; /* align vertical */
@@ -42,7 +42,7 @@ body {
 
 /* Articles */
 #articleHeader.block {
-	background: #ff0000;
+	background: #e8462b;
 	margin-bottom: 0px;
 }
 
