@@ -18,7 +18,7 @@ body {
 }
 
 .additional{
-  
+
   font-size: 14px;
 }
 
@@ -43,17 +43,20 @@ body {
 	justify-content: center; /* align horizontal */
 	align-items: center; /* align vertical */
 	padding: 10px;
-	margin: 10px;
+	margin: 20px;
 }
 
 /* Articles */
 #articleHeader.block {
 	background: #e8462b;
+	margin-top: 0px;
 	margin-bottom: 0px;
 }
 
 #articleDescription {
 	margin-top: 0px;
+	margin-bottom: 0px;
+	font-size: 12px;
 }
 
 /* Logo */
@@ -73,13 +76,12 @@ div#date {
 div#heading_block {
 	background: #e8462b;
 	margin-bottom: 0;
-	font-size: 16px;
 }
 
 div#heading {
-
 	background: #e8462b;
 	display:inline-block;
+	font-size: 26px;
 }
 
 /* body block consists of two body's */
@@ -88,8 +90,8 @@ div#body_block {
 }
 
 div#body {
-	padding-top: 0px;
 	display: inline-block;
+	font-size: 14px;
 }
 
 ul {
