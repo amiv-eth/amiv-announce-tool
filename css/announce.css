@@ -66,8 +66,7 @@ div#date {
 /* heading block consists of two headings */
 div#heading_block {
 	background: #e8462b;
-	padding-top: 0;
-	padding-bottom: 0;
+	margin-bottom: 0;
 	font-size: 16px;
 }
 
@@ -79,7 +78,7 @@ div#heading {
 
 /* body block consists of two body's */
 div#body_block {
-	padding-top: 0px;
+	margin-top: 0px;
 }
 
 div#body {
