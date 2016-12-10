@@ -12,17 +12,24 @@ $(document).ready(function(){
 
 	var out = "";
 
-	var html = "<table class='table' id='mytable'><tbody class='sortableList'>";
+	var html = "<table class='table' id='mytable'>";
 
-	html += "<tr>";
+	html += "<tr><thead>";
 	html+= "<th>Title</th>";// Add all headers here
 	html+= "<th>Description</th>";
-	html += "</tr>";
+	html+= "<th>Catchphrase</th>";
+	html+= "<th>Location</th>";
+	html+= "<th>Price</th>";
+	html += "</tr></thead><tbody class='sortableList'>";
+	
 	$.each( data._items, function( key, val ) {
 	    if(this.show_announce==true){ // Only display events which are selected to appear in the Announce
 		html +="<tr class='clicky' id='" + this._id + "'>";
 		html+= "<td>"+this.title_en +" </td>"; // List all display worthy data here
-		html += "<td>" + this.description_en + "</td>";
+		html += "<td>"+this.description_en+"</td>";
+		html += "<td>"+this.catchphrase_en+"</td>";
+		html += "<td>"+this.location+"</td>";
+		html += "<td>"+this.price+"</td>";
 		html+= "</tr>";
 	    }
 	});
@@ -46,6 +53,7 @@ $(document).ready(function(){
 
 	$(  function() {
 	    $(".sortableList").sortable(); // Make table rows sortable
+	    $(".sortableList").sortable("option","axis","y");
 	});
 
 	$('button').click(function() {

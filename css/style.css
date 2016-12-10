@@ -2,10 +2,10 @@ tr:hover{
     background: lightblue;
 }
 .selected{
-    background: yellow;
+    background: #98FB98;
 }
 .featured{
-    background: red;
+    background: salmon;
 }
 .clicky{
 }
