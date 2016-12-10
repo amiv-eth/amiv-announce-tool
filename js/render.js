@@ -15,6 +15,11 @@ $(document).ready(function() {
       $('#target').append(rendered);
     }, 'html');
 
+    $.get('./templates/agenda.html', function(template) {
+      var rendered = Mustache.render(template, data);
+      $('#target').append(rendered);
+    }, 'html');
+
     $.get('./templates/articles.html', function(template) {
       var rendered = Mustache.render(template, data);
       $('#target').append(rendered);
@@ -24,8 +29,6 @@ $(document).ready(function() {
       var rendered = Mustache.render(template, data);
       $('#target').append(rendered);
     }, 'html');
-
-
   });
 
 });
