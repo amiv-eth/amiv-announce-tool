@@ -65,7 +65,8 @@ $(document).ready(function(){
 
 	$('#select').click(function() {
 	    var arr_id = [];
-	    var elements_id = document.getElementsByClassName("selected");
+      var elements_id = document.querySelectorAll('.selected,.featured')
+	    // elements that are 'featured' are displayed AS WELL
 	    var arr_feature = [];
 	    var elements_feature = document.getElementsByClassName("featured");
 
