@@ -38,5 +38,5 @@ function(listID, lang)
 
   selectedData = JSON.stringify([obj]);
 
-
+  return selectedData;
 }

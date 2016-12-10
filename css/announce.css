@@ -5,25 +5,25 @@ body {
 
 
 .title{
-        font-size: 20px;
+  font-size: 20px;
 }
 
 .cachphrase{
-        font-size: 16px;
+  font-size: 16px;
 }
 
 .additional{
-        font-size: 14px;
+  font-size: 14px;
 }
 
 .header{
-        color: #fff;
-        width: 630px;
-        background: #ff0000;
-        margin: auto;
-        justify-content: center; /* align horizontal */
-        align-items: center; /* align vertical */
-        padding: 10px;
+  color: #fff;
+  width: 630px;
+  background: #ff0000;
+  margin: auto;
+  justify-content: center; /* align horizontal */
+  align-items: center; /* align vertical */
+  padding: 10px;
 
 }
 
@@ -41,9 +41,13 @@ body {
 }
 
 /* Articles */
-#header.block{
+#articleHeader.block {
 	background: #ff0000;
 	margin-bottom: 0px;
+}
+
+#articleDescription {
+	margin-top: 0px;
 }
 
 /* Logo */
