@@ -25,6 +25,11 @@ $(document).ready(function() {
       $('#target').append(rendered);
     }, 'html');
 
+    $.get('./templates/agenda.html', function(template) {
+      var rendered = Mustache.render(template, data);
+      $('#target').append(rendered);
+    }, 'html');
+
 
   });
 
