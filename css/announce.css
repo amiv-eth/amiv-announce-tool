@@ -12,14 +12,20 @@ body {
   font-size: 16px;
 }
 
+#price{
+	font-size: 14px;
+	align: right;
+}
+
 .additional{
+  
   font-size: 14px;
 }
 
 .header{
   color: #fff;
   width: 630px;
-  background: #ff0000;
+  background: #e8462b;
   margin: auto;
   justify-content: center; /* align horizontal */
   align-items: center; /* align vertical */
@@ -42,7 +48,7 @@ body {
 
 /* Articles */
 #articleHeader.block {
-	background: #ff0000;
+	background: #e8462b;
 	margin-bottom: 0px;
 }
 
@@ -66,8 +72,7 @@ div#date {
 /* heading block consists of two headings */
 div#heading_block {
 	background: #e8462b;
-	padding-top: 0;
-	padding-bottom: 0;
+	margin-bottom: 0;
 	font-size: 16px;
 }
 
@@ -79,7 +84,7 @@ div#heading {
 
 /* body block consists of two body's */
 div#body_block {
-	padding-top: 0px;
+	margin-top: 0px;
 }
 
 div#body {
