@@ -24,7 +24,7 @@ $(document).ready(function(){
 	
 	$.each( data._items, function( key, val ) {
 	    if(this.show_announce==true){ // Only display events which are selected to appear in the Announce
-		html +="<tr class='clicky' id='" + this._id + "'>";
+		html +="<tr class='clicky selected' id='" + this._id + "'>";
 		html+= "<td>"+this.title_en +" </td>"; // List all display worthy data here
 		html += "<td>"+this.description_en+"</td>";
 		html += "<td>"+this.catchphrase_en+"</td>";
@@ -56,7 +56,14 @@ $(document).ready(function(){
 	    $(".sortableList").sortable("option","axis","y");
 	});
 
-	$('button').click(function() {
+	$('#reset').click(function(){
+	    if(confirm("Are you sure you want to delete your selection?")){
+		$(".clicky").removeClass("featured");
+		$(".clicky").addClass("selected");
+	    }
+	});
+	
+	$('#select').click(function() {
 	    var arr_id = [];
 	    var elements_id = document.getElementsByClassName("selected");
 	    var arr_feature = [];
