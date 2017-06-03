@@ -25,7 +25,7 @@ $(document).ready(function(){
 	$.each( data._items, function( key, val ) {
 	    if(this.show_announce==true){ // Only display events which are selected to appear in the Announce
 		html +="<tr class='clicky selected' id='" + this._id + "'>";
-		html+= "<td>"+this.title_en +" </td>"; // List all display worthy data here
+		html+= "<td>"+this.title_en +" </td>"; // List all display worthy data here (with its english title)
 		html += "<td class='clickdescription'><a href='#' data-featherlight='<div>"+this.description_en+"</div>'>Click here to read</td>";
 		html += "<td>"+this.catchphrase_en+"</td>";
 		html += "<td>"+this.location+"</td>";
@@ -79,9 +79,9 @@ $(document).ready(function(){
 
 	    doRender(arr_id, arr_feature);
 
-	    $("#target").ready(function(){
-		$.featherlight($("#target"));
-	    });
+	    //$("#target").ready(function(){
+
+	    //});
 
 	    console.log(arr_id);
 	    console.log(arr_feature);
