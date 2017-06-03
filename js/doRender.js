@@ -11,7 +11,7 @@ function doRender(selectedIDs, featuredIDs) {
   $.getJSON(generateURL('?where={"_id": { "$in":[' + IDs + '] } }'), function(data) {
 
   }).done(function(data) {
-    selectedData = data;
+    selectedData = prepareJSON(data, 'de');
     renderhelp();
   });
 
@@ -21,7 +21,7 @@ function doRender(selectedIDs, featuredIDs) {
   $.getJSON(generateURL('?where={"_id": { "$in":[' + IDs + '] } }'), function(data) {
 
   }).done(function(data) {
-    featuredData = data;
+    featuredData = prepareJSON(data, 'de');
     renderhelp();
   });
 
