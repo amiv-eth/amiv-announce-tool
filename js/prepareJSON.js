@@ -17,13 +17,13 @@ function prepareJSON(selectedData, lang)
   //   selectedData = data;
   // });
 
-  console.log(selectedData['_items']);
+  console.log(selectedData);
 
   // Go through JSON and delete all unnecessary language tags. Also add helper
   // function to get the right date.
   // Based on https://stackoverflow.com/questions/13391579/how-to-rename-json-key
   // @todo: do for all elements!
-  var obj = JSON.parse(selectedData[_items]);
+  var obj = JSON.parse(selectedData);
   console.log(obj);
 
   if(lang = 'en')

@@ -8,6 +8,12 @@ body {
   font-size: 20px;
 }
 
+#section.title{
+	padding-top: 10px;
+	text-align: center;
+
+}
+
 .cachphrase{
   font-size: 16px;
 }
@@ -44,6 +50,10 @@ body {
 	align-items: center; /* align vertical */
 	padding: 10px;
 	margin: 20px;
+}
+#section.block{
+	background: ##e8462b;
+
 }
 
 /* Articles */

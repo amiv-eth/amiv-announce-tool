@@ -11,7 +11,7 @@ function doRender(selectedIDs, featuredIDs) {
   $.getJSON(generateURL('?where={"_id": { "$in":[' + IDs + '] } }'), function(data) {
 
   }).done(function(data) {
-    selectedData = prepareJSON(data, 'de');
+    selectedData = data;
     renderhelp();
   });
 
@@ -21,7 +21,7 @@ function doRender(selectedIDs, featuredIDs) {
   $.getJSON(generateURL('?where={"_id": { "$in":[' + IDs + '] } }'), function(data) {
 
   }).done(function(data) {
-    featuredData = prepareJSON(data, 'de');
+    featuredData = data;
     renderhelp();
   });
 
@@ -57,10 +57,15 @@ function renderhelp() {
         $('#target').append(rendered);
       }, 'html');
 
-      $.get('./templates/articles.html', function(template) {
+      $.get('./templates/articles_de.html', function(template) {
         var rendered = Mustache.render(template, selectedData);
         $('#target').append(rendered);
       }, 'html');
+      $.get('./templates/articles_en.html', function(template) {
+        var rendered = Mustache.render(template, selectedData);
+        $('#target').append(rendered);
+      }, 'html');
+
 
       $.get('./templates/footer.html', function(template) {
         var rendered = Mustache.render(template, selectedData);
