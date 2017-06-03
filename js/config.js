@@ -2,7 +2,7 @@
 Config file
 */
 
-var baseURL = "http://192.168.1.100/";
+var baseURL = "https://amiv-apidev.vsos.ethz.ch/";
 var directory = "events"
 
 function generateURL(filter = '')
