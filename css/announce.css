@@ -3,6 +3,10 @@ body {
 	font-size:8px;
 }
 
+img {
+	width: 100%;
+	max-width: 100px;
+}
 
 .title{
   font-size: 20px;
