@@ -1,56 +1,38 @@
 /*
-For the given event JSON and the given ID array filter the corresponding entries.
-Accepts language input en/de.
-Shorten language keys so that we can use the same template for all languages.
-Then style the date.
-@todo: test!
+@brief: Add formatted date and time for English and German readers.
+
+Source for two digit date/month: https://stackoverflow.com/questions/6040515/how-do-i-get-month-and-date-of-javascript-in-2-digit-format
 */
 
-function prepareJSON(selectedData, lang)
+function prepareJSON(selectedData)
 {
-
-  // // Get raw data of the selected IDs
-  // var selectedData;
-  // $.getJSON(generateURL('?where={"_id": { \'$in\':' + listID + '\' } }'), function(data) {
-  //
-  // }).done(function(data) {
-  //   selectedData = data;
-  // });
-
   console.log(selectedData);
 
-  // Go through JSON and delete all unnecessary language tags. Also add helper
-  // function to get the right date.
-  // Based on https://stackoverflow.com/questions/13391579/how-to-rename-json-key
-  // @todo: do for all elements!
-  var obj = JSON.parse(selectedData);
-  console.log(obj);
 
-  if(lang = 'en')
-  {
-    alert('en');
-    obj.title = obj.title_en;
-    obj.catchphrase = obj.catchphrase_en;
-    obj.description = obj.description_en;
+  selectedData._items.forEach(function(item) {
+    var startTime = new Date(item.time_start);
+    var startRegister = new Date(item.time_register_start);
 
-    delete obj.title_en, obj.catchphrase_en, obj.description_en;
+    item.time_start_de = ("0" + startTime.getDate()).slice(-2) + "."
+                                + ("0" + (startTime.getMonth() + 1)).slice(-2) + ", "
+                                + startTime.getHours() + ":"
+                                + startTime.getMinutes();
 
-    // var startTime = new Date(obj.time_register_start);
-    // obj.start_time = startTime;
-  }
-  else
-  {
-    obj.title = obj.title_de;
-    obj.catchphrase = obj.catchphrase_de;
-    obj.description = obj.description_de;
+    item.time_start_en = ("0" + startTime.getDate()).slice(-2) + "/"
+                                + ("0" + (startTime.getMonth() + 1)).slice(-2) + ", "
+                                + startTime.getHours() + ":"
+                                + startTime.getMinutes();
 
-    delete obj.title_de, obj.catchphrase_de, obj.description_de;
+    item.time_register_start_de = ("0" + startRegister.getDate()).slice(-2) + "."
+                                + ("0" + (startRegister.getMonth() + 1)).slice(-2) + ", "
+                                + startRegister.getHours() + ":"
+                                + startRegister.getMinutes();
 
-    // var startTime = new Date(obj.time_register_start);
-    // obj.start_time = startTime;
-  }
-
-  selectedData = JSON.stringify([obj]);
+    item.time_register_start_en = ("0" + startRegister.getDate()).slice(-2) + "/"
+                                + ("0" + (startRegister.getMonth() + 1)).slice(-2) + ", "
+                                + startRegister.getHours() + ":"
+                                + startRegister.getMinutes();
+  });
 
   return selectedData;
 }
