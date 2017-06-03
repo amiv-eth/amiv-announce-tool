@@ -6,24 +6,25 @@ Then style the date.
 @todo: test!
 */
 
-function prepareJSON(listID, lang)
+function prepareJSON(selectedData, lang)
 {
 
-  // Get raw data of the selected IDs
-  var selectedData;
-  $.getJSON(generateURL('?where={"_id": { \'$in\':' + listID + '\' } }'), function(data) {
+  // // Get raw data of the selected IDs
+  // var selectedData;
+  // $.getJSON(generateURL('?where={"_id": { \'$in\':' + listID + '\' } }'), function(data) {
+  //
+  // }).done(function(data) {
+  //   selectedData = data;
+  // });
 
-  }).done(function(data) {
-    selectedData = data;
-  });
-
-  alert(selectedData);
+  console.log(selectedData['_items']);
 
   // Go through JSON and delete all unnecessary language tags. Also add helper
   // function to get the right date.
   // Based on https://stackoverflow.com/questions/13391579/how-to-rename-json-key
   // @todo: do for all elements!
-  var obj = JSON.parse(selectedData)[0];
+  var obj = JSON.parse(selectedData[_items]);
+  console.log(obj);
 
   if(lang = 'en')
   {
@@ -34,8 +35,8 @@ function prepareJSON(listID, lang)
 
     delete obj.title_en, obj.catchphrase_en, obj.description_en;
 
-    var startTime = new Date(obj.time_register_start);
-    obj.start_time = startTime;
+    // var startTime = new Date(obj.time_register_start);
+    // obj.start_time = startTime;
   }
   else
   {
@@ -45,8 +46,8 @@ function prepareJSON(listID, lang)
 
     delete obj.title_de, obj.catchphrase_de, obj.description_de;
 
-    var startTime = new Date(obj.time_register_start);
-    obj.start_time = startTime;
+    // var startTime = new Date(obj.time_register_start);
+    // obj.start_time = startTime;
   }
 
   selectedData = JSON.stringify([obj]);
