@@ -45,57 +45,55 @@ function renderhelp(renderProgress) {
        $.get('./templates/header.html', function(template) {
         var rendered = Mustache.render(template, selectedData);
         //write in Target space(index.html)
-        targetElement.html(rendered);
+        targetElement.val(rendered);
         renderhelp(renderProgress-1);
         }, 'html');
         break;
       case 6:
       $.get('./templates/logo.html', function(template) {
         var rendered = Mustache.render(template, selectedData);
-        targetElement.append(rendered);
+        targetElement.val(targetElement.val() + rendered);
         renderhelp(renderProgress-1);
         }, 'html');
         break;
       case 5:
       $.get('./templates/featured.html', function(template) {
         var rendered = Mustache.render(template, featuredData); //uses featureData
-        targetElement.append(rendered);
+        targetElement.val(targetElement.val() + rendered);
         renderhelp(renderProgress-1);
         }, 'html');
         break;
       case 4:
         $.get('./templates/agenda.html', function(template) {
         var rendered = Mustache.render(template, selectedData);
-        targetElement.append(rendered);
+        targetElement.val(targetElement.val() + rendered);
         renderhelp(renderProgress-1);
         }, 'html');
         break;
       case 3:
         $.get('./templates/articles_de.html', function(template) {
         var rendered = Mustache.render(template, selectedData);
-        targetElement.append(rendered);
+        targetElement.val(targetElement.val() + rendered);
         renderhelp(renderProgress-1);
         }, 'html');
         break;
       case 2:
         $.get('./templates/articles_en.html', function(template) {
         var rendered = Mustache.render(template, selectedData);
-        targetElement.append(rendered);
+        targetElement.val(targetElement.val() + rendered);
         renderhelp(renderProgress-1);
         }, 'html');
         break;
       case 1:
         $.get('./templates/footer.html', function(template) {
         var rendered = Mustache.render(template, selectedData);
-        targetElement.append(rendered);
+        targetElement.val(targetElement.val() + rendered);
         renderhelp(renderProgress-1);
         }, 'html');
       break;
       case 0:
           selectedData = undefined;
           featuredData = undefined;
-
-          $.featherlight(targetElement);
       break;
     }
  }

@@ -63,7 +63,12 @@ $(document).ready(function(){
 	    }
 	});
 
-	$('#select').click(function() {
+  // Convert render in HTML and show in Featherlight
+  $('#preview').click(function() {
+    $.featherlight($('#target').val());
+  });
+
+	$('#render').click(function() {
 	    var arr_id = [];
       var elements_id = document.querySelectorAll('.selected,.featured')
 	    // elements that are 'featured' are displayed AS WELL
