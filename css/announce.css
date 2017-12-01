@@ -1,3 +1,4 @@
+/* General Styles */
 body {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-size:8px;
@@ -27,20 +28,8 @@ img {
 	align: right;
 }
 
-.additional{
-
+.additional {
   font-size: 14px;
-}
-
-.header{
-  color: #fff;
-  width: 630px;
-  background: #e8462b;
-  margin: auto;
-  justify-content: center; /* align horizontal */
-  align-items: center; /* align vertical */
-  padding: 10px;
-
 }
 
 /* Standard blue block with content */
@@ -55,9 +44,10 @@ img {
 	padding: 10px;
 	margin: 20px;
 }
-#section.block{
-	background: ##e8462b;
 
+/* Section Title */
+#section.block{
+	background: #e8462b;
 }
 
 /* Articles */
@@ -86,6 +76,8 @@ div#date {
 	display: inline-block;
 	vertical-align: middle;
 }
+
+
 /* heading block consists of two headings */
 div#heading_block {
 	background: #e8462b;
