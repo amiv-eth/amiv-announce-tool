@@ -1,23 +1,29 @@
-<div class="block" id="heading_block">
-  <div class="block" id="heading">Agenda</div>
-  <div class="block" id="heading">Information</div>
-</div>
-
-<div class="block" id="body_block">
-  <div class="block" id = "body">
-    <ul>
-      {{#_items}}
-        <li>{{time_start_en}}:: {{title_en}}</li>
-      {{/_items}}
-    </ul>
+<div id="agenda">
+  <div class="block" id="header">
+    <div class="block" id="header">
+      <font class="title">Agenda</font>
+    </div>
+    <div class="block" id="header">
+      <font class="title">Information</font>
+    </div>
   </div>
 
-  <div class="block" id = "body">
-    <ul>
-      {{#_items}}
-        <li>Wo: {{location}}</li>
-      {{/_items}}
-    </ul>
-  </div>
+  <div class="block" id="content">
+    <div class="block" id="content">
+      <ul>
+        {{#_items}}
+          <li>{{time_start_en}}::{{title_en}}</li>
+        {{/_items}}
+      </ul>
+    </div>
 
+    <div class="block" id="content">
+      <ul>
+        {{#_items}}
+          <li>Wo: {{location}}</li>
+        {{/_items}}
+      </ul>
+    </div>
+
+  </div>
 </div>

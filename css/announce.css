@@ -9,21 +9,28 @@ img {
 	max-width: 100px;
 }
 
-.title{
+ul {
+	padding: 0;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	list-style-type:none;
+}
+
+li {
+	margin-top: 10px;
+}
+
+/* General Text Styles */
+.title {
   font-size: 20px;
 }
 
-#section.title{
-	padding-top: 10px;
-	text-align: center;
-
-}
-
-.cachphrase{
+.catchphrase {
   font-size: 16px;
+	font-style: italic;
 }
 
-#price{
+.price {
 	font-size: 14px;
 	align: right;
 }
@@ -32,7 +39,7 @@ img {
   font-size: 14px;
 }
 
-/* Standard blue block with content */
+/* Blocks */
 .block {
 	color: #fff;
 	width: 630px;
@@ -45,68 +52,65 @@ img {
 	margin: 20px;
 }
 
-/* Section Title */
-#section.block{
-	background: #e8462b;
-}
-
-/* Articles */
-#articleHeader.block {
+#header.block {
 	background: #e8462b;
 	margin-top: 0px;
 	margin-bottom: 0px;
 }
 
-#articleDescription {
+#content.block {
 	margin-top: 0px;
 	margin-bottom: 0px;
 	font-size: 12px;
 }
 
-/* Logo */
-#logo.block {
+#section.block{
+	background: #e8462b;
+	margin-top: 15px;
+	margin-bottom: 5px;
 }
 
-div#title {
+/* Sections */
+#section .title{
+	padding-top: 0px;
+	padding-bottom: 5px;
+	text-align: center;
+}
+
+/* Logo */
+#logo .block {
+}
+
+#logo .title {
 	float: left;
 	width: 80%;
 }
 
-div#date {
+#logo .date {
 	display: inline-block;
 	vertical-align: middle;
 }
 
 
 /* heading block consists of two headings */
-div#heading_block {
+/*div#heading_block {
 	background: #e8462b;
 	margin-bottom: 0;
-}
+}*/
 
-div#heading {
+#heading .block {
 	background: #e8462b;
 	display:inline-block;
 	font-size: 26px;
+	width: 50%;
 }
 
 /* body block consists of two body's */
-div#body_block {
+/*div#body_block {
 	margin-top: 0px;
-}
+}*/
 
-div#body {
+#body .block {
 	display: inline-block;
 	font-size: 14px;
-}
-
-ul {
-	padding: 0;
-	margin-top: 0px;
-	margin-bottom: 0px;
-	list-style-type:none;
-}
-
-li {
-	margin-top: 10px;
 }

@@ -1,16 +1,16 @@
 <div class= "block" id="section" >
-<h1 class="title"> English </h1>
-</div>
-{{#_items}}
-<div class="block" id="articleHeader">
-  <h1 class="title">{{title_en}}
-    <i class="cachphrase">{{catchphrase_en}}</i>
-  </h1>
-  <p class="additional"></p>
-</div>
-<div class="block" id="articleDescription">
-  {{#img_infoscreen}}<img src="https://amiv-apidev.vsos.ethz.ch{{file}}">{{/img_infoscreen}}
-  <p class="block">{{description_en}}</p>
+  <h1 class="title"> English </h1>
 </div>
 
+{{#_items}}
+  <div class="block" id="header">
+    <div class="title">{{title_en}}
+      <font class="catchphrase">{{catchphrase_en}}</font>
+    </div>
+    <p class="additional"></p>
+  </div>
+  <div class="block" id="content">
+    {{#img_infoscreen}}<img src="https://amiv-apidev.vsos.ethz.ch{{file}}">{{/img_infoscreen}}
+    <p class="block">{{description_en}}</p>
+  </div>
 {{/_items}}
