@@ -130,7 +130,7 @@ $(document).ready(function(){
           $.post(mailHandler,
             {
               msg: $('#target').val(),
-              sub: "Test Announce"
+              sub: $('#MailTitle').val()
             },
             function() {
             // Success function
