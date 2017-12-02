@@ -127,7 +127,12 @@ $(document).ready(function(){
       doRender(arr_id, arr_feature, function() {
         if(confirm("Are you sure you want to send the Announce?"))
         {
-          $.post(mailHandler, $('#target').val(), function() {
+          $.post(mailHandler,
+            {
+              msg: $('#target').val(),
+              sub: "Test Announce"
+            },
+            function() {
             // Success function
             // @todo: Tell API to deselect sent entries
             $(".clicky").removeClass("featured");
