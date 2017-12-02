@@ -18,7 +18,15 @@ require('jquery-ui/ui/widgets/sortable')
 var arr_id = [];
 var arr_feature = [];
 
-export default function render() {
+var hasRendered = false;
+
+export function wasRenderedOnce() {
+  return hasRendered;
+}
+
+export function render() {
+
+  hasRendered = true;
 
   /*
     Refresher helper
