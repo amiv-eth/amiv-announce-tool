@@ -18,7 +18,7 @@ require('jquery-ui/ui/widgets/sortable')
 var arr_id = [];
 var arr_feature = [];
 
-$(document).ready(function(){
+export default function render() {
 
   /*
     Refresher helper
@@ -151,4 +151,6 @@ $(document).ready(function(){
       });
     });
   });
-})
+}
+
+$(document).ready(render)
