@@ -99,21 +99,43 @@ $(document).ready(function(){
   	  $(".sortableList").sortable("option","axis","y");
   	});
 
-  	$('#reset').click(function(){
-      if(confirm("Are you sure you want to delete your selection?")){
+  	$('#reset').click(function() {
+      if(confirm("Are you sure you want to delete your selection?"))
+      {
         $(".clicky").removeClass("featured");
         $(".clicky").addClass("selected");
   	  }
   	});
 
     /*
-      Preview rendered
+      Preview selected
       Renders data and shows it in overlay
     */
     $('#preview').click(function() {
       refreshSelected();
       doRender(arr_id, arr_feature, function(){
         $.featherlight($('#target').val());
+      });
+    });
+
+    /*
+      Send selected
+      Renders data and sends it to the mail handler
+    */
+    $('#send').click(function() {
+      refreshSelected();
+      doRender(arr_id, arr_feature, function() {
+        if(confirm("Are you sure you want to send the Announce?"))
+        {
+          $.post(mailHandler, $('#target').val(), function() {
+            // Success function
+            // @todo: Tell API to deselect sent entries
+            $(".clicky").removeClass("featured");
+            $(".clicky").removeClass("selected");
+          }).fail(function() {
+            alert("Oh no, something went wrong!")
+          });
+        }
       });
     });
   });
