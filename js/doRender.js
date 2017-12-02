@@ -2,8 +2,7 @@ var selectedData;
 var featuredData;
 var targetElement;
 
-function doRender(selectedIDs, featuredIDs) {
-
+function doRender(selectedIDs, featuredIDs, callback) {
   // Prepare array with quotation marks
   // based on https://stackoverflow.com/questions/8483179/javascript-array-as-a-list-of-strings-preserving-quotes
   var IDs = '"' + selectedIDs.join('","') + '"';
@@ -13,7 +12,7 @@ function doRender(selectedIDs, featuredIDs) {
 
   }).done(function(data) {
     selectedData = prepareJSON(data);
-    renderhelp(7);
+    renderhelp(7, callback);
   });
 
 //same thing as above but for the featured IDs. Renderhelp is called here and above, as it is not known which data is ready first.
@@ -23,7 +22,7 @@ function doRender(selectedIDs, featuredIDs) {
 
   }).done(function(data) {
     featuredData = prepareJSON(data);
-    renderhelp(7);
+    renderhelp(7, callback);
   });
 
 
@@ -32,68 +31,70 @@ function doRender(selectedIDs, featuredIDs) {
 //this function renders the data. It checks that both data are available else it aborts to wait for the next call when the data should be ready
 // (the function is called twice from above as it is not known which data will be ready first)
 // It is necessary for both data to be ready so that the data is rendered in the right order with the featured events between rest.
-function renderhelp(renderProgress) {
-      if (typeof selectedData == "undefined" || typeof featuredData == "undefined") {
-        return;
-      }
-    //  targetElement = $('div');
-      targetElement = $('#target');
+// @todo: Tidier to use Deferred objects?
+function renderhelp(renderProgress, callback) {
+  if (typeof selectedData == "undefined" || typeof featuredData == "undefined") {
+    return;
+  }
+  //  targetElement = $('div');
+  targetElement = $('#target');
 
-      // Render data with templates
-      switch(renderProgress){
-      case 7:
-       $.get('./templates/header.html', function(template) {
-        var rendered = Mustache.render(template, selectedData);
-        //write in Target space(index.html)
-        targetElement.val(rendered);
-        renderhelp(renderProgress-1);
-        }, 'html');
-        break;
-      case 6:
-      $.get('./templates/logo.html', function(template) {
-        var rendered = Mustache.render(template, selectedData);
-        targetElement.val(targetElement.val() + rendered);
-        renderhelp(renderProgress-1);
-        }, 'html');
-        break;
-      case 5:
-      $.get('./templates/featured.html', function(template) {
-        var rendered = Mustache.render(template, featuredData); //uses featureData
-        targetElement.val(targetElement.val() + rendered);
-        renderhelp(renderProgress-1);
-        }, 'html');
-        break;
-      case 4:
-        $.get('./templates/agenda.html', function(template) {
-        var rendered = Mustache.render(template, selectedData);
-        targetElement.val(targetElement.val() + rendered);
-        renderhelp(renderProgress-1);
-        }, 'html');
-        break;
-      case 3:
-        $.get('./templates/articles_de.html', function(template) {
-        var rendered = Mustache.render(template, selectedData);
-        targetElement.val(targetElement.val() + rendered);
-        renderhelp(renderProgress-1);
-        }, 'html');
-        break;
-      case 2:
-        $.get('./templates/articles_en.html', function(template) {
-        var rendered = Mustache.render(template, selectedData);
-        targetElement.val(targetElement.val() + rendered);
-        renderhelp(renderProgress-1);
-        }, 'html');
-        break;
-      case 1:
-        $.get('./templates/footer.html', function(template) {
-        var rendered = Mustache.render(template, selectedData);
-        targetElement.val(targetElement.val() + rendered);
-        renderhelp(renderProgress-1);
-        }, 'html');
-      break;
-      case 0:
-          selectedData = undefined;
-          featuredData = undefined;
-      break;
-    }
- }
+  // Render data with templates
+  switch(renderProgress){
+  case 7:
+   $.get('./templates/header.html', function(template) {
+    var rendered = Mustache.render(template, selectedData);
+    //write in Target space(index.html)
+    targetElement.val(rendered);
+    renderhelp(renderProgress-1, callback);
+    }, 'html');
+    break;
+  case 6:
+  $.get('./templates/logo.html', function(template) {
+    var rendered = Mustache.render(template, selectedData);
+    targetElement.val(targetElement.val() + rendered);
+    renderhelp(renderProgress-1, callback);
+    }, 'html');
+    break;
+  case 5:
+  $.get('./templates/featured.html', function(template) {
+    var rendered = Mustache.render(template, featuredData); //uses featureData
+    targetElement.val(targetElement.val() + rendered);
+    renderhelp(renderProgress-1, callback);
+    }, 'html');
+    break;
+  case 4:
+    $.get('./templates/agenda.html', function(template) {
+    var rendered = Mustache.render(template, selectedData);
+    targetElement.val(targetElement.val() + rendered);
+    renderhelp(renderProgress-1, callback);
+    }, 'html');
+    break;
+  case 3:
+    $.get('./templates/articles_de.html', function(template) {
+    var rendered = Mustache.render(template, selectedData);
+    targetElement.val(targetElement.val() + rendered);
+    renderhelp(renderProgress-1, callback);
+    }, 'html');
+    break;
+  case 2:
+    $.get('./templates/articles_en.html', function(template) {
+    var rendered = Mustache.render(template, selectedData);
+    targetElement.val(targetElement.val() + rendered);
+    renderhelp(renderProgress-1, callback);
+    }, 'html');
+    break;
+  case 1:
+    $.get('./templates/footer.html', function(template) {
+    var rendered = Mustache.render(template, selectedData);
+    targetElement.val(targetElement.val() + rendered);
+    renderhelp(renderProgress-1, callback);
+    }, 'html');
+  break;
+  case 0:
+      selectedData = undefined;
+      featuredData = undefined;
+      callback();
+  break;
+  }
+}

@@ -6,9 +6,41 @@
 /* https://amiv-apidev.vsos.ethz.ch/events?where={%22show_announce%22:%20true} */
 
 // Concept: Get all event data from AMIV API, filter by show_announce tag, allow for some sorting and selecting of the displayed data, generate mail and finally post mail to mail server
-// @todo: Eww, that looks dirty... should be tidied up somewhen
+
+// Selected elements
+var arr_id = [];
+var arr_feature = [];
 
 $(document).ready(function(){
+
+  /*
+    Refresher helper
+    Refreshes the selected data
+  */
+  function refreshSelected() {
+    // Reset elements
+    arr_id = [];
+    arr_feature = [];
+
+    // Get all selected events
+    var elements_id = document.querySelectorAll('.selected,.featured');
+    var elements_feature = document.getElementsByClassName("featured");
+
+    $.each(elements_id, function(index, value) {
+      arr_id.push(this.id);
+    });
+    $.each(elements_feature, function(index, value) {
+      arr_feature.push(this.id);
+    });
+
+    console.log(arr_id);
+    console.log(arr_feature);
+  }
+  /*
+    Request data
+    Get current events from the API
+    @todo: Eww, that looks dirty... should be tidied up somewhen
+  */
   $.getJSON( generateURL('?where{\'show_announce\': true}'), function(data) {
 
   	var out = "";
@@ -42,6 +74,10 @@ $(document).ready(function(){
   	    $( "#events" ).append(html);
   	});
 
+    /*
+      Event list
+      Can be selected, featured or deselected
+    */
   	$('#events').on("click",  ".clicky", function(e){ //Handle is #events since the table is NOT in DOM and therefore has to be accessed indirectly
 	    if($(this).hasClass("selected"))
       {
@@ -70,45 +106,15 @@ $(document).ready(function(){
   	  }
   	});
 
-    // Convert render in HTML and show in Featherlight
+    /*
+      Preview rendered
+      Renders data and shows it in overlay
+    */
     $('#preview').click(function() {
-      $.featherlight($('#target').val());
-    });
-
-  	$('#render').click(function() {
-      var arr_id = [];
-      var elements_id = document.querySelectorAll('.selected,.featured')
-      // elements that are 'featured' are displayed AS WELL
-      var arr_feature = [];
-      var elements_feature = document.getElementsByClassName("featured");
-
-      $.each(elements_id, function(index,value){
-  		  arr_id.push(this.id);
-  	  });
-  	  $.each(elements_feature, function(index, value){
-  		  arr_feature.push(this.id);
-  	  });
-
-  	  doRender(arr_id, arr_feature);
-
-  	  if (arr_feature.length == 2){ // The selection is valid iff there are two featured events
-
-  		/*		out += posturl+"?";
-  				for(id in arr_id){
-  				out += "id[]="+arr_id[id]+"&";
-  				}
-  				for(feature in arr_feature){
-  				out += "feature[]="+arr_feature[feature];
-  				if(feature != arr_feature.length-1){
-  				out += "&";
-  				}
-  				}
-  				console.log(out);
-  				window.location = out; */
-
-  	    } /*else if(arr_feature.length != 2){
-  		alert("You have to select exactly two events to be featured.");
-  	    }*/
+      refreshSelected();
+      doRender(arr_id, arr_feature, function(){
+        $.featherlight($('#target').val());
+      });
     });
   });
 })
