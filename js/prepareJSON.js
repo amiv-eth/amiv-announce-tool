@@ -34,7 +34,7 @@ return  ("0" + inDate.getDate()).slice(-2) + "/"
 }
 
 
-function prepareJSON(selectedData)
+export function prepareJSON(selectedData)
 {
   selectedData._items.forEach(function(item) {
     var startTime = new Date(item.time_start);
