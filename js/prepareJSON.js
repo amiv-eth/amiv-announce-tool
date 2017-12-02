@@ -1,41 +1,45 @@
 /*
 @brief: Add formatted date and time for English and German readers.
+        Also we need to sort the array again by ID.
 
 Source for two digit date/month: https://stackoverflow.com/questions/6040515/how-do-i-get-month-and-date-of-javascript-in-2-digit-format
 */
 
-function makeDateNamed_en(inDate){
+function makeDateNamed_en(inDate) {
   var monthNames = ["January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-  return  (("0" + inDate.getDate()).slice(-2) + " "
+    "July", "August", "September", "October", "November", "December"];
+  return (("0" + inDate.getDate()).slice(-2) + " "
                               + monthNames[inDate.getMonth()] + " "
                               + inDate.getHours() + ":"
                               + inDate.getMinutes()
                             );
 }
 
-function makeDateNamed_de(inDate){
+function makeDateNamed_de(inDate) {
   var monthNames = ["Januar", "Februar", "März", "April", "Mai", "Juni",
-    "Juli", "August", "September", "October", "November", "Dezember"
-  ];
-  return  (("0" + inDate.getDate()).slice(-2) + " "
+    "Juli", "August", "September", "October", "November", "Dezember"];
+  return (("0" + inDate.getDate()).slice(-2) + " "
                               + monthNames[inDate.getMonth()] + " "
                               + inDate.getHours() + ":"
                               + inDate.getMinutes()
                             );
 }
+
 function makeDate(inDate){
-return  ("0" + inDate.getDate()).slice(-2) + "/"
-                                + ("0" + (inDate.getMonth() + 1)).slice(-2) + ", "
-                               + inDate.getHours() + ":"
-                                + inDate.getMinutes();
+  return  ("0" + inDate.getDate()).slice(-2) + "/"
+                              + ("0" + (inDate.getMonth() + 1)).slice(-2) + ", "
+                              + inDate.getHours() + ":"
+                              + inDate.getMinutes();
 
 }
 
-
-function prepareJSON(selectedData)
+function prepareJSON(selectedData, selectedIDs)
 {
+  // Used for sorting according to the selectedIDs
+  var preparedData = selectedData;
+  var position = 0;
+
+  // Add formatted date and time
   selectedData._items.forEach(function(item) {
     var startTime = new Date(item.time_start);
     var startRegister = new Date(item.time_register_start);
@@ -46,11 +50,15 @@ function prepareJSON(selectedData)
     item.time_register_start_de = makeDateNamed_de(startRegister);
     item.time_register_start_en = makeDateNamed_en(startRegister);
 
+    // Look which position it has according to the sorted list of IDs
+    item.position = $.inArray(item._id, selectedIDs);
+    // console.log(item._id + " is at position " + item.position + " in " + selectedIDs);
+    preparedData._items[item.position] = item;
   });
 
   // Add today's date for the header
   var now = new Date();
-  selectedData.today = now.getDay() + "/" + now.getMonth() + "/" + now.getFullYear();
+  preparedData.today = now.getDay() + "/" + now.getMonth() + "/" + now.getFullYear();
 
-  return selectedData;
+  return preparedData;
 }

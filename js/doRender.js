@@ -7,12 +7,15 @@ function doRender(selectedIDs, featuredIDs, callback) {
   // Prepare array with quotation marks
   // based on https://stackoverflow.com/questions/8483179/javascript-array-as-a-list-of-strings-preserving-quotes
   var IDs = '"' + selectedIDs.join('","') + '"';
+  // console.log(generateURL('?where={"_id": { "$in":[' + IDs + '] } }'));
 
   // Get JSON file with test data
   $.getJSON(generateURL('?where={"_id": { "$in":[' + IDs + '] } }'), function(data) {
 
   }).done(function(data) {
-    selectedData = prepareJSON(data);
+    // console.log("Raw Data:");
+    // console.log(data);
+    selectedData = prepareJSON(data, selectedIDs);
     renderhelp(7, callback);
   });
 
@@ -22,7 +25,7 @@ function doRender(selectedIDs, featuredIDs, callback) {
   $.getJSON(generateURL('?where={"_id": { "$in":[' + IDs + '] } }'), function(data) {
 
   }).done(function(data) {
-    featuredData = prepareJSON(data);
+    featuredData = prepareJSON(data, featuredIDs);
     renderhelp(7, callback);
   });
 }

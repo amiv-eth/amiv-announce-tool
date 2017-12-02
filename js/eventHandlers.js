@@ -32,6 +32,7 @@ $(document).ready(function(){
     arr_feature = $('.featured').map(function(i) {
       return this.id;
     }).get();
+    console.log(arr_id);
   }
   /*
     Request data
