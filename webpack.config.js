@@ -55,6 +55,18 @@ const config = {
         test: /\.css$/,
         use: ['style-loader', 'css-loader'],
       },
+      {
+        test: /\.(html|css)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              useRelativePath: true,
+              publicPath,
+            },
+          },
+        ],
+      },
     ],
 
   },
