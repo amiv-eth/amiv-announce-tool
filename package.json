@@ -1,8 +1,8 @@
 {
-  "name": "webpack-babel-eslint",
+  "name": "announcetool",
   "version": "0.0.1",
-  "description": "A webpack boilerplate usable with any framework.",
-  "main": "index.js",
+  "description": "Renders Announce email from selected events.",
+  "main": "./js/index.js",
   "scripts": {
     "start": "webpack-dev-server --hot --inline",
     "build": "webpack -p --config webpack.config.prod.js",
@@ -11,9 +11,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:NotSpecial/webpack-babel-eslint.git"
+    "url": "git@gitlab.ethz.ch:amiv/amivapi-announce-tool.git"
   },
-  "author": "Alexander Dietmüller",
+  "author": "Jan-Philipp Schulze",
   "dependencies": {
     "bootstrap": "^3.3.7",
     "featherlight": "^1.7.10",
