@@ -36,21 +36,21 @@ return  ("0" + inDate.getDate()).slice(-2) + "/"
 
 function prepareJSON(selectedData)
 {
-  console.log(selectedData);
-
-
   selectedData._items.forEach(function(item) {
     var startTime = new Date(item.time_start);
     var startRegister = new Date(item.time_register_start);
 
     item.time_start_de =  makeDate(startTime);
-
     item.time_start_en = makeDateNamed_en(startTime);
 
     item.time_register_start_de = makeDateNamed_de(startRegister);
-
     item.time_register_start_en = makeDateNamed_en(startRegister);
+
   });
+
+  // Add today's date for the header
+  var now = new Date();
+  selectedData.today = now.getDay() + "/" + now.getMonth() + "/" + now.getFullYear();
 
   return selectedData;
 }

@@ -4,6 +4,11 @@ body {
 	font-size:8px;
 }
 
+p:after {
+	content:"\a";
+	white-space: pre;
+}
+
 img {
 	width: 100%;
 	max-width: 100px;
@@ -46,8 +51,8 @@ li {
 	background: #1f2d54;
 	margin: auto;
 	display: flex;
-	justify-content: center; /* align horizontal */
-	align-items: center; /* align vertical */
+	justify-content: center; /* align horizontally */
+	align-items: center; /* align vertically */
 	padding: 10px;
 	margin: 20px;
 }
@@ -89,28 +94,4 @@ li {
 #logo .date {
 	display: inline-block;
 	vertical-align: middle;
-}
-
-
-/* heading block consists of two headings */
-/*div#heading_block {
-	background: #e8462b;
-	margin-bottom: 0;
-}*/
-
-#heading .block {
-	background: #e8462b;
-	display:inline-block;
-	font-size: 26px;
-	width: 50%;
-}
-
-/* body block consists of two body's */
-/*div#body_block {
-	margin-top: 0px;
-}*/
-
-#body .block {
-	display: inline-block;
-	font-size: 14px;
 }
