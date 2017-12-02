@@ -5,9 +5,9 @@
 var baseURL = "https://amiv-apidev.vsos.ethz.ch/";
 var directory = "events";
 
-var mailHandler = "https://mail.handler.url/";
+var mailHandler = "http://192.168.1.9:5000/mailer";
 
-function generateURL(filter = '')
+export function generateURL(filter = '')
 {
   return baseURL + directory + filter;
 }

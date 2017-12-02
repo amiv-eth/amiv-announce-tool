@@ -1,3 +1,10 @@
+import { generateURL } from './config.js'
+import { doRender } from './doRender.js'
+var $ = require('jquery')
+require('featherlight')
+require('jquery-ui')
+require('jquery-ui/ui/widgets/sortable')
+
 /*  List based on http://stackoverflow.com/questions/3390786/jquery-ui-sortable-selectable
     Selected IDs based on http://stackoverflow.com/questions/8582686/get-data-attribute-of-jquery-ui-selectable */
 
@@ -127,7 +134,12 @@ $(document).ready(function(){
       doRender(arr_id, arr_feature, function() {
         if(confirm("Are you sure you want to send the Announce?"))
         {
-          $.post(mailHandler, $('#target').val(), function() {
+          $.post(mailHandler,
+            {
+              msg: $('#target').val(),
+              sub: "Test Announce"
+            },
+            function() {
             // Success function
             // @todo: Tell API to deselect sent entries
             $(".clicky").removeClass("featured");

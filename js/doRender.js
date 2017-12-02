@@ -1,8 +1,14 @@
+import { generateURL } from './config.js'
+import { prepareJSON } from './prepareJSON.js'
+var $ = require('jquery')
+import { render } from 'mustache'
+
+
 var selectedData;
 var featuredData;
 var targetElement;
 
-function doRender(selectedIDs, featuredIDs, callback) {
+export function doRender(selectedIDs, featuredIDs, callback) {
   // Prepare array with quotation marks
   // based on https://stackoverflow.com/questions/8483179/javascript-array-as-a-list-of-strings-preserving-quotes
   var IDs = '"' + selectedIDs.join('","') + '"';
@@ -43,7 +49,7 @@ function renderhelp(renderProgress, callback) {
   switch(renderProgress){
   case 7:
    $.get('./templates/header.html', function(template) {
-    var rendered = Mustache.render(template, selectedData);
+    var rendered = render(template, selectedData);
     //write in Target space(index.html)
     targetElement.val(rendered);
     renderhelp(renderProgress-1, callback);
@@ -51,42 +57,42 @@ function renderhelp(renderProgress, callback) {
     break;
   case 6:
   $.get('./templates/logo.html', function(template) {
-    var rendered = Mustache.render(template, selectedData);
+    var rendered = render(template, selectedData);
     targetElement.val(targetElement.val() + rendered);
     renderhelp(renderProgress-1, callback);
     }, 'html');
     break;
   case 5:
   $.get('./templates/featured.html', function(template) {
-    var rendered = Mustache.render(template, featuredData); //uses featureData
+    var rendered = render(template, featuredData); //uses featureData
     targetElement.val(targetElement.val() + rendered);
     renderhelp(renderProgress-1, callback);
     }, 'html');
     break;
   case 4:
     $.get('./templates/agenda.html', function(template) {
-    var rendered = Mustache.render(template, selectedData);
+    var rendered = render(template, selectedData);
     targetElement.val(targetElement.val() + rendered);
     renderhelp(renderProgress-1, callback);
     }, 'html');
     break;
   case 3:
     $.get('./templates/articles_de.html', function(template) {
-    var rendered = Mustache.render(template, selectedData);
+    var rendered = render(template, selectedData);
     targetElement.val(targetElement.val() + rendered);
     renderhelp(renderProgress-1, callback);
     }, 'html');
     break;
   case 2:
     $.get('./templates/articles_en.html', function(template) {
-    var rendered = Mustache.render(template, selectedData);
+    var rendered = render(template, selectedData);
     targetElement.val(targetElement.val() + rendered);
     renderhelp(renderProgress-1, callback);
     }, 'html');
     break;
   case 1:
     $.get('./templates/footer.html', function(template) {
-    var rendered = Mustache.render(template, selectedData);
+    var rendered = render(template, selectedData);
     targetElement.val(targetElement.val() + rendered);
     renderhelp(renderProgress-1, callback);
     }, 'html');
