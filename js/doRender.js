@@ -2,6 +2,13 @@ import { generateURL } from './config.js'
 import { prepareJSON } from './prepareJSON.js'
 var $ = require('jquery')
 import { render } from 'mustache'
+import header from '../templates/header.html';
+import logo from '../templates/logo.html';
+import featured from '../templates/featured.html';
+import agenda from '../templates/agenda.html';
+import articles_de from '../templates/articles_de.html';
+import articles_en from '../templates/articles_en.html';
+import footer from '../templates/footer.html';
 
 
 var selectedData;
@@ -48,7 +55,7 @@ function renderhelp(renderProgress, callback) {
   // Render data with templates
   switch(renderProgress){
   case 7:
-   $.get('./templates/header.html', function(template) {
+   $.get(header, function(template) {
     var rendered = render(template, selectedData);
     //write in Target space(index.html)
     targetElement.val(rendered);
@@ -56,42 +63,42 @@ function renderhelp(renderProgress, callback) {
     }, 'html');
     break;
   case 6:
-  $.get('./templates/logo.html', function(template) {
+  $.get(logo, function(template) {
     var rendered = render(template, selectedData);
     targetElement.val(targetElement.val() + rendered);
     renderhelp(renderProgress-1, callback);
     }, 'html');
     break;
   case 5:
-  $.get('./templates/featured.html', function(template) {
+  $.get(featured, function(template) {
     var rendered = render(template, featuredData); //uses featureData
     targetElement.val(targetElement.val() + rendered);
     renderhelp(renderProgress-1, callback);
     }, 'html');
     break;
   case 4:
-    $.get('./templates/agenda.html', function(template) {
+    $.get(agenda, function(template) {
     var rendered = render(template, selectedData);
     targetElement.val(targetElement.val() + rendered);
     renderhelp(renderProgress-1, callback);
     }, 'html');
     break;
   case 3:
-    $.get('./templates/articles_de.html', function(template) {
+    $.get(articles_de, function(template) {
     var rendered = render(template, selectedData);
     targetElement.val(targetElement.val() + rendered);
     renderhelp(renderProgress-1, callback);
     }, 'html');
     break;
   case 2:
-    $.get('./templates/articles_en.html', function(template) {
+    $.get(articles_en, function(template) {
     var rendered = render(template, selectedData);
     targetElement.val(targetElement.val() + rendered);
     renderhelp(renderProgress-1, callback);
     }, 'html');
     break;
   case 1:
-    $.get('./templates/footer.html', function(template) {
+    $.get(footer, function(template) {
     var rendered = render(template, selectedData);
     targetElement.val(targetElement.val() + rendered);
     renderhelp(renderProgress-1, callback);
@@ -104,3 +111,5 @@ function renderhelp(renderProgress, callback) {
   break;
   }
 }
+
+
