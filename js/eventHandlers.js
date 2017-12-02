@@ -26,15 +26,12 @@ $(document).ready(function(){
     var elements_id = document.querySelectorAll('.selected,.featured');
     var elements_feature = document.getElementsByClassName("featured");
 
-    $.each(elements_id, function(index, value) {
-      arr_id.push(this.id);
-    });
-    $.each(elements_feature, function(index, value) {
-      arr_feature.push(this.id);
-    });
-
-    console.log(arr_id);
-    console.log(arr_feature);
+    arr_id = $('.selected, .featured').map(function(i) {
+      return this.id;
+    }).get();
+    arr_feature = $('.featured').map(function(i) {
+      return this.id;
+    }).get();
   }
   /*
     Request data

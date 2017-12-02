@@ -3,6 +3,7 @@ var featuredData;
 var targetElement;
 
 function doRender(selectedIDs, featuredIDs, callback) {
+
   // Prepare array with quotation marks
   // based on https://stackoverflow.com/questions/8483179/javascript-array-as-a-list-of-strings-preserving-quotes
   var IDs = '"' + selectedIDs.join('","') + '"';
@@ -24,8 +25,6 @@ function doRender(selectedIDs, featuredIDs, callback) {
     featuredData = prepareJSON(data);
     renderhelp(7, callback);
   });
-
-
 }
 
 //this function renders the data. It checks that both data are available else it aborts to wait for the next call when the data should be ready
