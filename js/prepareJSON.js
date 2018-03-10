@@ -5,7 +5,10 @@
 Source for two digit date/month: https://stackoverflow.com/questions/6040515/how-do-i-get-month-and-date-of-javascript-in-2-digit-format
 */
 
-function makeDateNamed_en(inDate) {
+import logo from '../images/logo_announce.png'
+import css from '../css/announce.css'
+
+function makeDateNamed_en(inDate){
   var monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"];
   return (("0" + inDate.getDate()).slice(-2) + " "
@@ -33,7 +36,8 @@ function makeDate(inDate){
 
 }
 
-function prepareJSON(selectedData, selectedIDs)
+
+export function prepareJSON(selectedData, selectedIDs)
 {
   // Used for sorting according to the selectedIDs
   var preparedData = selectedData;
@@ -59,6 +63,8 @@ function prepareJSON(selectedData, selectedIDs)
   // Add today's date for the header
   var now = new Date();
   preparedData.today = now.getDay() + "/" + now.getMonth() + "/" + now.getFullYear();
+  preparedData.logo = logo;
+  preparedData.announceCss = css;
 
   return preparedData;
 }

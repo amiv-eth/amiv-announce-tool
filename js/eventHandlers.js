@@ -1,3 +1,10 @@
+import { generateURL } from './config.js'
+import { doRender } from './doRender.js'
+var $ = require('jquery')
+require('featherlight')
+require('jquery-ui')
+require('jquery-ui/ui/widgets/sortable')
+
 /*  List based on http://stackoverflow.com/questions/3390786/jquery-ui-sortable-selectable
     Selected IDs based on http://stackoverflow.com/questions/8582686/get-data-attribute-of-jquery-ui-selectable */
 
@@ -11,7 +18,15 @@
 var arr_id = [];
 var arr_feature = [];
 
-$(document).ready(function(){
+var hasRendered = false;
+
+export function wasRenderedOnce() {
+  return hasRendered;
+}
+
+export function render() {
+
+  hasRendered = true;
 
   /*
     Refresher helper
@@ -142,4 +157,6 @@ $(document).ready(function(){
       });
     });
   });
-})
+}
+
+$(document).ready(render)
