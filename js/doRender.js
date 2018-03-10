@@ -16,15 +16,19 @@ var featuredData;
 var targetElement;
 
 export function doRender(selectedIDs, featuredIDs, callback) {
+
   // Prepare array with quotation marks
   // based on https://stackoverflow.com/questions/8483179/javascript-array-as-a-list-of-strings-preserving-quotes
   var IDs = '"' + selectedIDs.join('","') + '"';
+  // console.log(generateURL('?where={"_id": { "$in":[' + IDs + '] } }'));
 
   // Get JSON file with test data
   $.getJSON(generateURL('?where={"_id": { "$in":[' + IDs + '] } }'), function(data) {
 
   }).done(function(data) {
-    selectedData = prepareJSON(data);
+    // console.log("Raw Data:");
+    // console.log(data);
+    selectedData = prepareJSON(data, selectedIDs);
     renderhelp(7, callback);
   });
 
@@ -34,14 +38,12 @@ export function doRender(selectedIDs, featuredIDs, callback) {
   $.getJSON(generateURL('?where={"_id": { "$in":[' + IDs + '] } }'), function(data) {
 
   }).done(function(data) {
-    featuredData = prepareJSON(data);
+    featuredData = prepareJSON(data, featuredIDs);
     renderhelp(7, callback);
   });
-
-
 }
 
-//this function renders the data. It checks that both data are available else it aborts to wait for the next call when the data should be ready
+// this function renders the data. It checks that both data are available else it aborts to wait for the next call when the data should be ready
 // (the function is called twice from above as it is not known which data will be ready first)
 // It is necessary for both data to be ready so that the data is rendered in the right order with the featured events between rest.
 // @todo: Tidier to use Deferred objects?
@@ -111,5 +113,3 @@ function renderhelp(renderProgress, callback) {
   break;
   }
 }
-
-

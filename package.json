@@ -1,7 +1,7 @@
 {
   "name": "announcetool",
   "version": "0.0.1",
-  "description": "Renders Announce email from selected events.",
+  "description": "Renders Announce newsletter from selected events.",
   "main": "./js/index.js",
   "scripts": {
     "start": "webpack-dev-server --hot --inline",
@@ -13,7 +13,7 @@
     "type": "git",
     "url": "git@gitlab.ethz.ch:amiv/amivapi-announce-tool.git"
   },
-  "author": "Jan-Philipp Schulze",
+  "author": "AMIV an der ETH",
   "dependencies": {
     "bootstrap": "^3.3.7",
     "featherlight": "^1.7.10",

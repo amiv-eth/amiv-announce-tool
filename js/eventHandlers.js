@@ -41,12 +41,12 @@ export function render() {
     var elements_id = document.querySelectorAll('.selected,.featured');
     var elements_feature = document.getElementsByClassName("featured");
 
-    $.each(elements_id, function(index, value) {
-      arr_id.push(this.id);
-    });
-    $.each(elements_feature, function(index, value) {
-      arr_feature.push(this.id);
-    });
+    arr_id = $('.selected, .featured').map(function(i) {
+      return this.id;
+    }).get();
+    arr_feature = $('.featured').map(function(i) {
+      return this.id;
+    }).get();
 
     console.log(arr_id);
     console.log(arr_feature);
@@ -145,7 +145,7 @@ export function render() {
           $.post(mailHandler,
             {
               msg: $('#target').val(),
-              sub: "Test Announce"
+              sub: $('#MailTitle').val()
             },
             function() {
             // Success function
