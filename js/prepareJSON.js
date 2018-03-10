@@ -40,7 +40,8 @@ function makeDate(inDate){
 export function prepareJSON(selectedData, selectedIDs)
 {
   // Used for sorting according to the selectedIDs
-  var preparedData = selectedData;
+  var preparedData = {};
+  preparedData._items = [];
   var position = 0;
 
   // Add formatted date and time
