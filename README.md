@@ -14,6 +14,12 @@ Clicking on "preview" or "send" invokes `mustache` which enriches the templates 
 
 If clicked on "send", the compiled HTML is sent to the `amivapi-announce-tool-backend`.
 
+To run the Announce tool at `http://localhost:9000/` use:
+```
+npm install
+npm start
+```
+
 ### Styling Guide
 The Announce newsletter is made of blocks. A *header* block is followed by a *content* block. There can be several *content* blocks within a *content* blick: each will get an equal share of the width.
 
