@@ -15,7 +15,7 @@
   },
   "author": "AMIV an der ETH",
   "dependencies": {
-    "bootstrap": "^3.3.7",
+    "bootstrap": "^3.4.1",
     "featherlight": "^1.7.10",
     "jquery": "^3.2.1",
     "jquery-ui": "^1.12.1",
